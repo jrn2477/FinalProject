@@ -10,7 +10,7 @@ public class GUI extends JFrame {
 	JPanel mainPanel, southPanel, northPanel, connectionPanel; 
 	JButton sendMessageButton, connectButton;
 	JLabel nameFieldLabel, ipAddressFieldLabel, portNumFieldLabel, messageLabel; 
-	JTextField ipAddressField, nameField, portNumField; 
+	JTextField ipAddressField, nameField, portNumField, messageField; 
 	JTextArea chatArea;  
 	
 	public static void main(String[] args) {
@@ -35,9 +35,10 @@ public class GUI extends JFrame {
 		southPanel = new JPanel(new GridLayout(1,2));
 		
 		sendMessageButton = new JButton("Send Message");
-		sendMessageButton.enable(false);
+		sendMessageButton.setEnabled(false);
 			// TODO: Add actionListener 
 		connectButton = new JButton("Connect"); 
+		connectButton.setEnabled(false);
 			// TODO: Add actionListener 
 		
 		helpMenuItem = new JMenuItem("Help");
@@ -54,11 +55,35 @@ public class GUI extends JFrame {
 		nameField = new JTextField(15);
 		portNumField = new JTextField(5); 
 		
+		chatArea = new JTextArea(15,20); // 15 rows; 20 columns 
+		messageField = new JTextField(20); 
+		
+		
+		connectionPanel.add(nameFieldLabel);
+		connectionPanel.add(nameField); 
+		connectionPanel.add(ipAddressFieldLabel); 
+		connectionPanel.add(portNumFieldLabel); 
+		connectionPanel.add(portNumField);
+		
+		northPanel.add(connectionPanel); 
+		northPanel.add(connectButton); 
+		
+		southPanel.add(messageField); 
+		southPanel.add(sendMessageButton); 
+		
+		mainPanel.add(northPanel, BorderLayout.NORTH); 
+		mainPanel.add(chatArea, BorderLayout.CENTER); 
+		mainPanel.add(southPanel, BorderLayout.SOUTH);
+		
+		
 		/*
 			CODE TO SETUP LAYOUT 
 		*/ 
 		
-		
+		add(mainPanel);
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 	}
 	
