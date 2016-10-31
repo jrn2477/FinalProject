@@ -88,4 +88,91 @@ public class GUI {
 		frame.setVisible(true);
 	}
 	
+	/**
+	**
+	** @return String; text inside the chat area
+	**/
+	public String getChatText(){
+		return chatArea.getText();
+	}
+	
+	/**
+	** @param String - Text to be placed in the chat window
+	** @return void 
+	**/
+	public void setChatText(String s) {
+		chatArea.setText(s);
+	}
+	
+	/**
+	**
+	** @return String - The message text 
+	**/
+	public String getSendMessageText() {
+		return messageField.getText();
+	}
+	
+	/**
+	** @param String - Text to be placed in the message field 
+	** @return void 
+	**/
+	public void setMessageText(String s) {
+		messageField.setText(s);
+	}
+	
+	/**
+	** 
+	** @return String - The Name of the user (could be void) 
+	**/
+	public String getNameText() {
+		return nameField.getText();
+	}
+	
+	/**
+	** @param String - Text (the name of the player) to be set in the Name field 
+	** @return void 
+	**/
+	public void setNameField(String s) {
+		nameField.setText(s);
+	}
+	
+	/**
+	**
+	** @return String - String of the IP Address 
+	**/
+	public String getIPAddress() {
+		return ipAddressField.getText();
+	}
+	
+	/**
+	** @param String - Text to set the textfield of the IP address
+	** @return void 
+	**/
+	public void setIPAddress(String s) {
+		ipAddressField.setText(s);
+	}
+	
+	/**
+	**  
+	** @return String  - the Port Number 
+	**/
+	public String getPort(){
+		return portNumField.getText();
+	}
+	
+	/**
+	** @param String - The String to be placed into the port num 
+	** @return void 
+	**/
+	public void setPort(String s) {
+		portNumField.setText(s)
+	}
+	
+	/**
+	** @param String - Message to be appended to the chat window 
+	** @return void 
+	**/
+	public void appendChat(String s) {
+		chatArea.append(s);
+	}
 }
