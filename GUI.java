@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class GUI extends JFrame {
+public class GUI {
 	
 	JFrame frame; 
 	JMenu fileMenu; 
@@ -18,7 +18,7 @@ public class GUI extends JFrame {
 	}
 	
 	public GUI() {
-		
+		init();
 	}
 	
 	
@@ -62,6 +62,7 @@ public class GUI extends JFrame {
 		connectionPanel.add(nameFieldLabel);
 		connectionPanel.add(nameField); 
 		connectionPanel.add(ipAddressFieldLabel); 
+		connectionPanel.add(ipAddressField);
 		connectionPanel.add(portNumFieldLabel); 
 		connectionPanel.add(portNumField);
 		
@@ -74,17 +75,17 @@ public class GUI extends JFrame {
 		mainPanel.add(northPanel, BorderLayout.NORTH); 
 		mainPanel.add(chatArea, BorderLayout.CENTER); 
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
-		
+		mainPanel.setVisible(true);
 		
 		/*
 			CODE TO SETUP LAYOUT 
 		*/ 
 		
-		add(mainPanel);
-		pack();
-		setLocationRelativeTo(null);
-		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		frame.add(mainPanel);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 	}
 	
 }
