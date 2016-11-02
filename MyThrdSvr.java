@@ -31,20 +31,34 @@ class ThreadServer extends Thread {
 		this.cs = cs;
 	}
 	public void run(){
-		System.out.println("running");
+		System.out.println("Connection Detected : "+cs.getInetAddress());
 		DataInputStream dis = null;
 		DataOutputStream dos = null;
+		String message = "f";
 		try{
 			dis = new DataInputStream(cs.getInputStream());
 			dos = new DataOutputStream(cs.getOutputStream());
-			System.out.println(dis.readLine());
+			//do{
+				//message = dis.readLine();
+				//System.out.println(message+cs.getInetAddress());
+			while(!message.equals("exit")){
+				System.out.println("while(message) execution");
+				String tempLine = dis.readLine();
+				if(tempLine != null){
+					System.out.println("if execution");
+					message = tempLine;
+				}
+				System.out.println("recieved: "+ message);
+				//message = null;
+			}
 			
-			dis.close();
 			dos.close();
+			dis.close();
 			cs.close();
 		}
 		catch(IOException ioe){
 			System.out.println("there was an i/o exception during the run method");
+			ioe.printStackTrace();
 		}
 	}
 }
