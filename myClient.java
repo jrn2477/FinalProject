@@ -41,29 +41,41 @@ class myClient extends JFrame implements ActionListener{
 	public static void main(String[] args){
 		new myClient();
 		try{
-			Socket sock = new Socket("localhost", 16798);
 			//Socket sock = new Socket("129.21.106.138", 16789);
-			DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
-			DataInputStream dis = new DataInputStream(sock.getInputStream());
-			PrintStream ps = new PrintStream(sock.getOutputStream());
-			String message;
+			 
 			
+			String message = "";
+			boolean cont = true; 
 			boolean stay = true;
-			while(stay){
-				System.out.println("Enter Message");
-				Scanner sc = new Scanner(System.in);
-				message = sc.nextLine();
-				stay = !message.equals("exit");
-				//ps.write(message.getBytes()); //both of these are good, but only do one.
-				dos.writeBytes(message);
-				System.out.println("sent: "+message);	
-				dos.flush();
-				stay = false;
-			}
+			Socket sock;
 			
-			dos.close();
-			dis.close();
-			sock.close();
+			while(stay){
+				System.out.println("Stay");
+				sock = new Socket("129.21.113.179", 16798);
+				DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
+				DataInputStream dis = new DataInputStream(sock.getInputStream());
+				PrintStream ps = new PrintStream(sock.getOutputStream());
+				while (cont) {
+					System.out.println("2");
+					System.out.println("Enter Message");
+					message = new Scanner(System.in).nextLine();
+					//ps.write(message.getBytes()); //both of these are good, but only do one.
+					dos.writeBytes(message);
+					System.out.println("sent: "+message);	
+					dos.flush();
+					dos.close();
+					dis.close();
+					cont = !message.equals("exit");
+				}
+				if (!cont) {
+					System.out.println("1");
+					sock.close();
+					stay = false;
+				}
+			}
+
+			
+			
 		}
 		catch(BindException be){
 			System.out.println("bind exception");
