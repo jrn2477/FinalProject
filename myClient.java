@@ -91,8 +91,6 @@ class myClient extends JFrame implements ActionListener{
 	}
 }
 
-// This is a comment , Hi- hello
-
 
 
 
