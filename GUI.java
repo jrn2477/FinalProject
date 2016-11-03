@@ -165,7 +165,7 @@ public class GUI {
 	** @return void 
 	**/
 	public void setPort(String s) {
-		portNumField.setText(s)
+		portNumField.setText(s);
 	}
 	
 	/**

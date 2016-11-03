@@ -41,9 +41,6 @@ class myClient extends JFrame implements ActionListener{
 	public static void main(String[] args){
 		new myClient();
 		try{
-			//Socket sock = new Socket("129.21.106.138", 16789);
-			 
-			
 			String message = "";
 			boolean cont = true; 
 			boolean stay = true;
