@@ -1,18 +1,22 @@
 import java.net.*;
 import java.io.*;
 import java.io.Reader.*;
+import java.util.concurrent.*;
 
 
 public class MyThrdSvr{
-	
+	//ConcurrentLinkedQueue s are more thread friendly, they also don't have a max size.
+	private static ConcurrentLinkedQueue<String> messages;
+	private ConcurrentLinkedQueue<ThreadServer> threads;
 	/*
 	** Overloaded Constructor 
 	** @return void 
 	** @param null
-	*/ 
+	*/
 	public MyThrdSvr(){
 		
-		
+		threads = new ConcurrentLinkedQueue<ThreadServer>();//max chatroom size is 15. this can be increased.
+		messages = new ConcurrentLinkedQueue<String>();//only stores 45 messages at a time, is then cleared.
 		// Code to create the ServerSocket 
 		// the ServerSocket will continue to accept threads
 		try{
@@ -25,8 +29,7 @@ public class MyThrdSvr{
 			while(true){
 				cs = ss.accept();
 				ThreadServer ts = new ThreadServer(cs);
-				// TODO: 
-				// Add ArrayBlockingQueue to store threads of the client 
+				threads.add(ts);
 				ts.start();
 			}
 		}
@@ -42,7 +45,19 @@ public class MyThrdSvr{
 			System.out.println("I/O Exception, MyThreadServer constructor");
 		}
 	}
-	
+	/*
+	** Adds Message to ArrayBlockingQueue<String> Messages
+	** @param m String representation of a message 
+	** @return void
+	*/
+	public static void addMessage(String m){
+		if(!messages.add(m)){//will add the item unless the queue is full.
+			messages.clear();//if queue is full, it is cleared
+			messages.add(m);//and the add is attempted again
+		}
+		System.out.println(messages.poll());//then prints whatever message is at the head of the queue
+		//this will need to be replaced with a broadcast method.
+	}
 	/*
 	** Main Method
 	** @param String[] 
@@ -62,6 +77,8 @@ class ThreadServer extends Thread {
 	
 	// Socket connnection between client and server threads 
 	Socket cs;
+	BufferedReader br;
+	DataOutputStream dos;
 	
 	/*
 	** Overloaded Constructor 
@@ -85,8 +102,8 @@ class ThreadServer extends Thread {
 		System.out.println("Connection Detected : "+cs.getInetAddress());
 		
 		// Objects necesary to form the connection
-		BufferedReader br = null;
-		DataOutputStream dos = null;
+		//BufferedReader br = null;
+		//DataOutputStream dos = null;//moved to attributes of this class.
 		// variable to hold the message - content not relevant 
 		String message = "f";
 		
@@ -95,47 +112,23 @@ class ThreadServer extends Thread {
 		// Try to form the connection
 		try{
 			// Create reader objects that will interpret information being sent. 
-			br = new BufferedReader(cs.getInputStream());
+			br = new BufferedReader(new InputStreamReader(cs.getInputStream()));
 			dos = new DataOutputStream(cs.getOutputStream());
-
-			// Continue reading in information until the user types "exit" 
-			while(!message.equals("exit")){
-				// Error checking 
-				System.out.println("while(message) execution");
-				
-				// While the BufferedReader has something to read 
-				// concatenate the tempLine string with the next character 
-				// will stop when the BufferedReader has nothing left to read 
-				String tempLine;
-				while (br.ready()) {
-					tempLine = br.read();
+			boolean connected = true;
+			while(connected){//will loop until the user wants to exit.
+				message = br.readLine();
+				if(message != null && !message.equals("exit")){//if "exit" is sent, it will not be printed
+					//System.out.println(message); //does not do the thing that we want.
+					MyThrdSvr.addMessage(message);
 				}
-				
-				// Parse the information read 
-				// Store in message variable to output to GUI later 
-				// Does it equal exit? 
-				if(tempLine != null){
-					System.out.println("if execution");
-					message = tempLine;
-					if (message.equals("exit")) {
-						return;
-					}
-				}
-				
-				// Check to make sure the message wasn't null
-				if (message != null) {
-					System.out.println("recieved: "+ message);
-				} else {
-					System.out.println("No message recieved");
+				if(message.equals("exit")){
+					connected = false;
+					dos.close();//these all need to close before we try to loop again, otherwise things get fucked up for some reason.
+					br.close();
+					cs.close();
 				}
 			}
-			
-			// Close Output Streams. 
-			dos.close();
-			br.close();
-			cs.close();
 		}
-		// Catch any exceptions 
 		catch(IOException ioe){
 			System.out.println("there was an i/o exception during the run method");
 			ioe.printStackTrace();
