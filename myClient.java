@@ -21,7 +21,7 @@ class myClient extends JFrame implements ActionListener{
 		new myClient();
 		try{
 			String message;
-			Socket sock = new Socket("129.21.113.179", 16798);
+			Socket sock = new Socket("127.0.0.1", 16798);
 			DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
 			DataInputStream dis = new DataInputStream(sock.getInputStream());
 			//do-while loop is better, nested loops are not necessary. 
