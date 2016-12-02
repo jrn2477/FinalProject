@@ -1,265 +1,257 @@
-
 import javax.swing.*;
+import javax.swing.border.*;
+import java.util.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.BindException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
 
-public class GUI extends Thread implements ActionListener {
-
-    JFrame frame;
-    JMenu fileMenu;
-    JMenuItem helpMenuItem, exitMenuItem;
-    JMenuBar menuBar;
-    JPanel mainPanel, southPanel, northPanel, connectionPanel;
-    JButton sendMessageButton, connectButton;
-    JLabel nameFieldLabel, ipAddressFieldLabel, portNumFieldLabel, messageLabel;
-    JTextField ipAddressField, nameField, portNumField, messageField;
-    JTextArea chatArea;
-
-    // Network Stuff
-    DataOutputStream dos;
-    BufferedReader dis;
-    Socket sock;
-
-    public static void main(String[] args) {
-        GUI g1 = new GUI();
-    }
-
-    public GUI() {
-        init();
-    }
-
-
-    /*
-	* Method to intitialize components 
-	*/
-    public void init() {
-
-        frame = new JFrame();
-
-        mainPanel = new JPanel(new BorderLayout());
-        northPanel = new JPanel(new GridLayout(1, 2));
-        connectionPanel = new JPanel(new GridLayout(3, 2));
-        southPanel = new JPanel(new GridLayout(1, 2));
-
-        sendMessageButton = new JButton("Send Message");
-        sendMessageButton.setEnabled(false);
-        sendMessageButton.addActionListener(this);
-
-        connectButton = new JButton("Connect");
-        connectButton.setEnabled(true);
-        connectButton.addActionListener(this);
-
-
-        helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(this);
-
-        exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(this);
-
-        nameFieldLabel = new JLabel("Name: ");
-        ipAddressFieldLabel = new JLabel("IP Address");
-        portNumFieldLabel = new JLabel("Port Number:");
-        messageLabel = new JLabel("Message:");
-
-        ipAddressField = new JTextField(15);
-        nameField = new JTextField(15);
-        portNumField = new JTextField(5);
-
-        chatArea = new JTextArea(15, 20); // 15 rows; 20 columns
-        messageField = new JTextField(20);
-
-
-        connectionPanel.add(nameFieldLabel);
-        connectionPanel.add(nameField);
-        connectionPanel.add(ipAddressFieldLabel);
-        connectionPanel.add(ipAddressField);
-        connectionPanel.add(portNumFieldLabel);
-        connectionPanel.add(portNumField);
-
-        northPanel.add(connectionPanel);
-        northPanel.add(connectButton);
-
-        southPanel.add(messageField);
-        southPanel.add(sendMessageButton);
-
-        mainPanel.add(northPanel, BorderLayout.NORTH);
-        mainPanel.add(chatArea, BorderLayout.CENTER);
-        mainPanel.add(southPanel, BorderLayout.SOUTH);
-        mainPanel.setVisible(true);
+/*
+	@author: Jason Norhdeim 
+	@version: 11/30/16 v1 
+	@decription: Class responsible for the visual interface of the client 
+*/ 
+public class GUI extends JFrame{
+	
+	private static final String YOUR_BOARD = "Your Board"; 
+	private static final String OPP_BOARD = "Opponents Board"; 
+	private ArrayList<JPanel> board1 = new ArrayList<JPanel>(); 
+	private ArrayList<JPanel> board2 = new ArrayList<JPanel>(); 
+	private JPanel myBoardPanel, oppBoardPanel, boardsPanel, gamePanel, gameBoard1, gameBoard2, 
+		chatPanel, shipPositionsPanel, connectionPanel; 
+	private JTextArea chatTextArea, userList; 
+	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField; 
+	private JButton sendMessageBtn, connectBtn, placeshipsBtn; 
+ 
+	
+	/*
+		Default Constructor 
+		@author: Jason Nordheim 
+		@version: 11/20/16 
+	*/ 
+	public GUI(){
+		setTitle("Let's Play Battleship"); 
+		setDefaultCloseOperation(EXIT_ON_CLOSE); 
+		getContentPane().setLayout(new FlowLayout(FlowLayout.LEFT,10,10));
+		setUpGameBoards(); 
+		setUpChat();
+		setVisible(true);
+		pack(); 
+	}
+	
+	/*
+		@author: Jason Nordheim 
+		@version: 11/29/30; updated 12/1/16 
+		@description: Method to setup the initial GUI
+	*/ 
+	public void setUpGameBoards(){
+		//Setup Boards Panel 
+		gameBoard1 = new JPanel();
+		gameBoard1.setLayout(new BorderLayout(10,10)); 
+		gameBoard2 = new JPanel();
+		gameBoard2.setLayout(new BorderLayout(10,10));
 		
-		/*
-			CODE TO SETUP LAYOUT 
-		*/
+		//Setup Labels 
+		JLabel lbl1 = new JLabel(YOUR_BOARD);
+		lbl1.setHorizontalAlignment(JLabel.CENTER);
+		JLabel lbl2 = new JLabel(OPP_BOARD); 
+		lbl2.setHorizontalAlignment(JLabel.CENTER);
+		gameBoard1.add(lbl1, BorderLayout.NORTH); 
+		gameBoard2.add(lbl2, BorderLayout.NORTH); 
 
-        frame.add(mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
+		// Setup Board 1 
+		myBoardPanel = makeBoard(board1);
+		gameBoard1.add(myBoardPanel, BorderLayout.CENTER); 
+		
+		// Setup Board 2 
+		oppBoardPanel = makeBoard(board2); 
+		gameBoard2.add(oppBoardPanel, BorderLayout.CENTER); 
+		
+		gamePanel = new JPanel(new GridLayout(1,2,10,25));
+		gamePanel.add(gameBoard1); 
+		gamePanel.add(gameBoard2); 
+		
+		// Setup Ship positioning elements 
+		JLabel ship1Label = new JLabel("Ship 1"); 
+		JLabel ship2Label = new JLabel("Ship 2"); 
+		JLabel ship3Label = new JLabel("Ship 3"); 
 
-    public void connect() {
-        try {
-            sock = new Socket(getIPAddress(), 16798);
-            dos = new DataOutputStream(sock.getOutputStream());
-            dis = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            //do-while loop is better, nested loops are not necessary.
-                dos.writeBytes("Welcome" + getNameText() + "to the server" + "\n");//writes it. the "\n" is necessary because a line is considered to be terminated by the BufferedReader (server-side) if it ends with a new line ("\n")
-                dos.flush();//flushes, ensuring that the message is written
-                //System.out.println();
-            this.start();
-        } catch (BindException be) {
-            System.out.println("bind exception");
-            be.printStackTrace();
-        } catch (UnknownHostException uhe) {
-            System.out.println("unknown host");
-        } catch (IOException ioe) {
-            System.out.println("ioe");
-            ioe.printStackTrace();
-        }
-
-    }
-
-    /**
-     * *
-     * * @return String; text inside the chat area
-     **/
-    public String getChatText() {
-        return chatArea.getText();
-    }
-
-    /**
-     * * @param String - Text to be placed in the chat window
-     * * @return void
-     **/
-    public void setChatText(String s) {
-        chatArea.setText(s);
-    }
-
-    /**
-     * *
-     * * @return String - The message text
-     **/
-    public String getSendMessageText() {
-        return messageField.getText();
-    }
-
-    /**
-     * * @param String - Text to be placed in the message field
-     * * @return void
-     **/
-    public void setMessageText(String s) {
-        messageField.setText(s);
-    }
-
-    /**
-     * *
-     * * @return String - The Name of the user (could be void)
-     **/
-    public String getNameText() {
-        return nameField.getText();
-    }
-
-    /**
-     * * @param String - Text (the name of the player) to be set in the Name field
-     * * @return void
-     **/
-    public void setNameField(String s) {
-        nameField.setText(s);
-    }
-
-    /**
-     * *
-     * * @return String - String of the IP Address
-     **/
-    public String getIPAddress() {
-        return ipAddressField.getText();
-    }
-
-    /**
-     * * @param String - Text to set the textfield of the IP address
-     * * @return void
-     **/
-    public void setIPAddress(String s) {
-        ipAddressField.setText(s);
-    }
-
-    /**
-     * *
-     * * @return String  - the Port Number
-     **/
-    public String getPort() {
-        return portNumField.getText();
-    }
-
-    /**
-     * * @param String - The String to be placed into the port num
-     * * @return void
-     **/
-    public void setPort(String s) {
-        portNumField.setText(s);
-    }
-
-    /**
-     * * @param String - Message to be appended to the chat window
-     * * @return void
-     **/
-    public void appendChat(String s) {
-        chatArea.append(s);
-    }
-
-
-    public void receivedMessaged() {
-        try{
-            String message = dis.readLine();
-            appendChat(message);
-        } catch(IOException ie) {
-            System.out.println("Hey something went wrong!");
-        }
-    }
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        if (e.getActionCommand() == "Connect") {
-
-            if (getNameText().isEmpty()) {/**do nothing**/ System.out.println("I stopped here 1");} else if (getIPAddress().isEmpty()) { /**do nothing **/ System.out.println("I stopped here 2");} else {
-                connect();
-                appendChat("Your connected");
-                connectButton.setEnabled(false);
-                sendMessageButton.setEnabled(true);
-            }
-
-        }
-        if (e.getActionCommand() == "Send Message") {
-            try {
-                String message;
-                message = getSendMessageText();
-                dos.writeBytes(message+"\n");
-                dos.flush();
-            } catch(IOException ie) {
-                System.out.println("ooops all berries");
-            }
-
-        }
-    }
-
-    public void run(){
-        String recieved;
-        while (true){
-            try {
-                recieved = dis.readLine();
-                if (recieved != null) {
-                    appendChat(recieved+"\n");
-                }
-            } catch(IOException ie) {
-                System.out.println("FUCKING WORK");
-            }
-        }
-    }
+		JLabel ship1Position1 = new JLabel("Bow"); 
+		ship1Position1.setHorizontalAlignment(JLabel.RIGHT); 
+		JLabel ship2Position1 = new JLabel("Bow"); 
+		ship2Position1.setHorizontalAlignment(JLabel.RIGHT); 
+		JLabel ship3Position1 = new JLabel("Bow"); 
+		ship3Position1.setHorizontalAlignment(JLabel.RIGHT);
+		
+		JLabel ship1Position2 = new JLabel("Mid"); 
+		ship1Position2.setHorizontalAlignment(JLabel.RIGHT);
+		JLabel ship2Position2 = new JLabel("Mid"); 
+		ship2Position2.setHorizontalAlignment(JLabel.RIGHT);
+		JLabel ship3Position2 = new JLabel("Mid");
+		ship3Position2.setHorizontalAlignment(JLabel.RIGHT);
+		
+		JLabel ship1Position3 = new JLabel("Stern"); 
+		ship1Position3.setHorizontalAlignment(JLabel.RIGHT);
+		JLabel ship2Position3 = new JLabel("Stern"); 
+		ship2Position3.setHorizontalAlignment(JLabel.RIGHT);
+		JLabel ship3Position3 = new JLabel("Stern");
+		ship3Position3.setHorizontalAlignment(JLabel.RIGHT);
+		
+		// setup the text fields for position entry 
+		// disable fields by default 
+		// Ship 1 Textfields 
+		JTextField ship1bow = new JTextField(2);
+		ship1bow.setEditable(false); 
+		JTextField ship2bow = new JTextField(2);
+		ship2bow.setEditable(false);
+		JTextField ship3bow = new JTextField(2);
+		ship3bow.setEditable(false);
+		
+		// Ship 2 Textfields 
+		JTextField ship1mid = new JTextField(2);
+		ship1mid.setEditable(false); 
+		JTextField ship2mid = new JTextField(2);
+		ship2mid.setEditable(false); 
+		JTextField ship3mid = new JTextField(2);
+		ship3mid.setEditable(false);	
+		
+		// ship 3 textfields 
+		JTextField ship1stern = new JTextField(2);
+		ship1stern.setEditable(false); 
+		JTextField ship2stern = new JTextField(2);
+		ship2stern.setEditable(false); 
+		JTextField ship3stern = new JTextField(2);
+		ship3stern.setEditable(false);	
+		
+		// place ships button
+		placeshipsBtn = new JButton("Place Ships!"); 
+		placeshipsBtn.setHorizontalAlignment(JButton.CENTER); 	
+		placeshipsBtn.setEnabled(false);
+		
+		shipPositionsPanel = new JPanel(new GridLayout(3,7));
+		
+		// Add ship 1 
+		shipPositionsPanel.add(ship1Label); 
+		shipPositionsPanel.add(ship1Position1);
+		shipPositionsPanel.add(ship1bow); 
+		shipPositionsPanel.add(ship1Position2);
+		shipPositionsPanel.add(ship1mid); 
+		shipPositionsPanel.add(ship1Position3);
+		shipPositionsPanel.add(ship1stern); 
+		
+		// add ship 2 
+		shipPositionsPanel.add(ship2Label); 
+		shipPositionsPanel.add(ship2Position1);
+		shipPositionsPanel.add(ship2bow); 
+		shipPositionsPanel.add(ship2Position2);
+		shipPositionsPanel.add(ship2mid); 
+		shipPositionsPanel.add(ship2Position3);
+		shipPositionsPanel.add(ship2stern);  
+		
+		// add ship 3 
+		shipPositionsPanel.add(ship3Label); 
+		shipPositionsPanel.add(ship3Position1);
+		shipPositionsPanel.add(ship3bow); 
+		shipPositionsPanel.add(ship3Position2);
+		shipPositionsPanel.add(ship3mid); 
+		shipPositionsPanel.add(ship3Position3);
+		shipPositionsPanel.add(ship3stern);  
+		
+		boardsPanel = new JPanel(new BorderLayout(10,10)); 
+		boardsPanel.add(gamePanel, BorderLayout.NORTH); 
+		boardsPanel.add(shipPositionsPanel, BorderLayout.CENTER); 
+		boardsPanel.add(placeshipsBtn, BorderLayout.SOUTH);
+		// Add the Boards Panel to the contentPane 
+		this.getContentPane().add(boardsPanel); 
+	}
+	
+	public void setUpChat() {
+		
+		
+		// setup connection Labels 
+		JLabel ipLabel, portLabel, screenNameLabel; 
+		ipLabel = new JLabel("IP Address:"); 
+		portLabel = new JLabel("Port Number:"); 
+		screenNameLabel = new JLabel("Screen Name");
+		
+		// setup textfields for connection
+		ipAddressTextField = new JTextField(36); 
+		portTextField = new JTextField(6);
+		userNameTextField = new JTextField(20); 
+		
+		// setup level 1 of connection panel 
+		JPanel level1 = new JPanel(new FlowLayout()); 
+		level1.add(ipLabel);
+		level1.add(ipAddressTextField);  
+		
+		// setup level 2 of connection panel 
+		JPanel level2 = new JPanel(new FlowLayout()); 
+		level2.add(portLabel); 
+		level2.add(portTextField); 
+		level2.add(screenNameLabel); 
+		level2.add(userNameTextField); 
+		
+		
+		JPanel level3 = new JPanel(new FlowLayout()); 
+		connectBtn = new JButton("Connect"); 
+		level3.add(connectBtn); 
+		
+		// setup connection panel 
+		connectionPanel = new JPanel(new GridLayout(3,1)); 
+		connectionPanel.add(level1); 
+		connectionPanel.add(level2);
+		connectionPanel.add(level3); 
+		
+		// setup the chat area
+		chatTextArea = new JTextArea(15,20); 
+		chatTextArea.setEnabled(false);
+		userList = new JTextArea(15,10);
+		JScrollPane jscp1 = new JScrollPane(userList);
+		JScrollPane jscp2 = new JScrollPane(chatTextArea); 
+		
+		// setup the message textfield 
+		messageTextField = new JTextField(40); 
+		messageTextField.setEditable(false); // disable until connection is established 
+		userList.setEditable(false);
+		
+		// send button 
+		sendMessageBtn = new JButton("Send"); 
+		//TODO: Add ActionListener
+		
+		//set up panel 
+		chatPanel = new JPanel(new BorderLayout(5,5)); 
+		chatPanel.add(chatTextArea, BorderLayout.CENTER); 
+		
+		JPanel sendMessagePanel = new JPanel(new FlowLayout()); 
+		sendMessagePanel.add(messageTextField); 
+		sendMessagePanel.add(sendMessageBtn); 
+		chatPanel.add(sendMessagePanel, BorderLayout.SOUTH);
+		chatPanel.add(connectionPanel, BorderLayout.NORTH);
+		chatPanel.add(userList, BorderLayout.WEST);
+		
+		// add to the content pane
+		this.getContentPane().add(chatPanel);
+	}
+	
+	
+	/*
+		@author: Jason Norhdeim 
+		@version: 11/29/16 
+		@description: Method to create a battlefield board. 
+		@param: ArrayList which will store each position panel 
+	*/ 
+	public JPanel makeBoard(ArrayList<JPanel> aryLst){
+		JPanel board = new JPanel(new GridLayout(8,8)); 
+		for (int i = 1; i < 65; i++) {
+			JPanel p = new JPanel(); 
+			aryLst.add(p); 
+			aryLst.get(i-1).setSize(80,80); 
+			aryLst.get(i-1).setBorder(LineBorder.createBlackLineBorder());
+			aryLst.get(i-1).add(new JLabel(Integer.toString(i))); 
+			board.add(aryLst.get(i-1)); 
+		}
+		return board; 
+	}
+	
+	public static void main(String[] args) {
+		new GUI();	
+	}
+	
 }
