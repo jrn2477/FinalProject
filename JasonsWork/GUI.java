@@ -34,7 +34,7 @@ public class GUI extends JFrame{
 	private static PrintWriter pw; 
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
-	private static ArrayList<String> connectedUserList = new ArrayList<String>(); 
+	public static ArrayList<String> connectedUserList = new ArrayList<String>(); 
 	
 	/*
 		Default Constructor 
@@ -478,7 +478,7 @@ public class GUI extends JFrame{
 			}	
 		}
 		
-	}
+	}//end ChatReader 
 	
 	/* 
 		Method to Process Transmissions from the server, the method will parse 
@@ -500,13 +500,20 @@ public class GUI extends JFrame{
 		if (trans.startsWith("_N3WUS3R_")) {
 			// get username 
 			int startPos = ("_N3WUS3R_").length();
-			String name = trans.substring(startPos); 
+			String nameList = trans.substring(startPos); 
 			
-			// update userlist 
-			addUser(name);
+			System.out.println("Name List: " + nameList); 
+			
+			String[] tempList = nameList.split("88888");
+			
+			for (int i = 0; i < tempList.length; i++) {
+				connectedUserList.add(tempList[i]);
+			}
+			
+			updateUserList();
 		}
 	}
-	
+
 	/*
 		Method to be called the processTransmission Method, at this point the transmission 
 		has been determined to be a message, and associated actions should be taken 
@@ -534,19 +541,6 @@ public class GUI extends JFrame{
 	}
 	
 	/*
-		Method to add User List 
-			Calls updateUserList to update the GUI with the new Users 
-		@author: Jason Nordheim 
-		@version: 12/6/16 
-		@param newUser: the user to be added 
-		@return void 
-	*/ 
-	public static void addUser(String newUser){ 
-		connectedUserList.add(newUser); 
-		updateUserList();
-	}
-	
-	/*
 		Method to update the displayed userlist of connected clients 
 			Appends userList (JTextArea) with users 
 		@author: Jason Nordheim 
@@ -563,7 +557,41 @@ public class GUI extends JFrame{
 			userList.append(s + "\n");
 		}
 	}
+		
+	public static void parseTransmittedUserList(String uList){
+		boolean keepGoing = true; 
+		ArrayList<String> tempList = new ArrayList<String>(); 
+		int startPos = 0; 
+		int endPos = uList.length();
+		CharSequence cs = "$3$"; 
+		int i = 0; 
+		String tempString = uList; 
+		
+		if (keepGoing) {
+			if (tempString.contains(cs)) {
+				int index = tempString.indexOf("$3$"); 
+				String user = tempString.substring(startPos, index);
+				System.out.println(user);
+				tempList.add(user); 
+				
+				//startPos = (user.length() + 3); 
+				tempString = tempString.substring((index + 3), endPos);
+				System.out.println("New String: " + i + " " + tempString);
+				i++; 
+			} else {
+				keepGoing = false;
+			}
+		}
+		
+		for (i = connectedUserList.size(); i > 0; i--) {
+			connectedUserList.remove(i);
+		}
+		for (i = 0; i < tempList.size(); i++) {
+			connectedUserList.add(tempList.get(i));
+		}
+	}
 	
+		
 	
 	/*
 		Main Method - launches application 

@@ -7,6 +7,7 @@ public class Server {
 	
 	private static int PORT = 6760;
 	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>();
+	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	
 	/* 
 		Default Constructor 
@@ -87,18 +88,17 @@ public class Server {
 				
 				transmission = br.readLine(); 
 				System.out.println("Server Recieved transmission: " + transmission); 
-
 				
 				if (transmission.startsWith("_US3R_")) {
 					// Process Username 
 					String usrName = transmission.substring(6); 
 					screenName = usrName; 
+					// Print to console 
 					System.out.println("User <" + screenName + "> connected"); 
-					
-					// Send username to connected clients 
-					for (ThreadedServer ths : connectedClients) {
-						((ThreadedServer)ths).announceNewUser(screenName);
-					}
+					// add user to arraylist
+					connectedUsers.add(screenName);
+					// send list out to clients 
+					announceUsers();
 				} else {
 					
 					// Send the transmission verbatem to all connected clients
@@ -133,11 +133,16 @@ public class Server {
 			}
 		}
 		
-		public void announceNewUser(String userName) {
+		public void announceUsers() {
 			PrintWriter pw; 
 			try {
 				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
-				pw.println("_N3WUS3R_" + userName); 
+				// format string to send 
+				String out = "_N3WUS3R_"; 
+				for (String user: connectedUsers) {
+					out += user + "88888"; 
+				}
+				pw.println(out); 
 				pw.flush();
 			} catch (Exception e) {
 				System.out.println("Error sending username to clients"); 
