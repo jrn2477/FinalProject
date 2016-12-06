@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.nio.*;
 
 public class Server {
 	
@@ -9,7 +10,7 @@ public class Server {
 	
 	public Server(){
 		
-		ServerSocket ss; 
+		ServerSocket ss = null; 
 		
 		try {
 			// Get IP Address: 
@@ -28,6 +29,7 @@ public class Server {
 				cs = ss.accept();
 				ThreadedServer ths = new ThreadedServer(cs); 
 				ths.start();
+				connectedClients.add(ths);
 			}
 		} catch (Exception e) {
 			// Something went wrong 
@@ -43,55 +45,44 @@ public class Server {
 		
 		public ThreadedServer(Socket s){
 			cs = s; 
-			connectedClients.add(this);
 		}
 		
 		public void run() {
 			BufferedReader br; 
 			PrintWriter pw; 
-			String transmission;
-			boolean keepRunning = true; 
+			String transmission; 
 			
-			while (keepRunning) {
-				try {
-					br = new BufferedReader(new InputStreamReader(cs.getInputStream())); 
-					pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
-					
-					
-					/* read in message for client  */ 
-					transmission = br.readLine(); 
-
-					
-					/* Parse transmission */ 
-					if (transmission != null) {
-						System.out.println("Server Read: " + transmission);
-						
-						// Parse transmission for username 
-						try {
-							String[] splitTransmission = transmission.split("_h3lp_"); 
-							screenName = splitTransmission[2];
-						} 
-						catch (Exception e) {
-							System.out.println("Unable to get username");							
-						}
-						
-						
-						
-						// Pass transmission to connected clients 
-						pw.println(transmission);
-						// Flush output stream
-						pw.flush();
-					} 
-					else {
-						// Transmission was null. Client likely disconnected 
-						pw.println(screenName + " disconnected");
-						keepRunning = false;
-					}
-				} catch (Exception e) {
-					System.out.println("Error with input/output streams");
-				} 
+			try {
+				br = new BufferedReader(new InputStreamReader(cs.getInputStream())); 
+				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
+				
+				transmission = br.readLine(); 
+				
+				System.out.println("Server Recieved: " + transmission); 
+				
+				for (ThreadedServer ths : connectedClients) {
+					((ThreadedServer)ths).sendTransmission(transmission);
+				}
+			} catch (Exception e) {
+				System.out.println("Error creating input/output streams"); 
+				e.getMessage(); 
+				e.printStackTrace();
 			}
 		}
+		
+		public void sendTransmission(String trans) {
+			PrintWriter pw; 
+			try {
+				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
+				pw.println(trans); 
+				pw.flush();
+			} catch (Exception e) {
+				System.out.println("Error sending transmission"); 
+				e.getMessage(); 
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	public static void main(String[] args){

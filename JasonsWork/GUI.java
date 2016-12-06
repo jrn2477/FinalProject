@@ -37,6 +37,7 @@ public class GUI extends JFrame{
 	*/ 
 	public GUI(){
 		setTitle("Let's Play Battleship"); 
+		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE); 
 		getContentPane().setLayout(new FlowLayout(FlowLayout.LEFT,10,10));
 		setUpGameBoards(); 
@@ -208,10 +209,11 @@ public class GUI extends JFrame{
 				tempPort = portTextField.getText(); 
 				tempSN = userNameTextField.getText(); 
 				
+				/* FOR TESTING PURPOSES
 				System.out.println("IP Address: " + tempIP
 					+ "\n" + "Port: " + tempPort
 					+ "\n" + "Screen Name: " + tempSN);
-				
+				*/ 				
 				
 				
 				if (tempIP.equals("")) {
@@ -253,9 +255,7 @@ public class GUI extends JFrame{
 					
 					// FORM THE CONNECTION 
 					try {
-						Socket s = new Socket(IP_ADDRESS,Integer.parseInt(PORT));
-						ChatReader reader = new ChatReader(s);
-						reader.start();
+						createConnection();
 					} catch (Exception e) {
 						System.out.println("Connection to Server could not be created.");
 						e.getMessage();
@@ -291,7 +291,7 @@ public class GUI extends JFrame{
 				// Compose transmission 
 				String transmission = ("M" + messageTextField.getText() + userNameTextField.getText());
 				sendTransmission("M",messageTextField.getText(), userNameTextField.getText());	
-				writeConsole(transmission);
+				// writeConsole(transmission);
 			}
 		});
 		
@@ -319,29 +319,9 @@ public class GUI extends JFrame{
 		try {
 			// Create connection
 			socket = new Socket(IP_ADDRESS,Integer.parseInt(PORT)); 
-			
-//			// Create Input Streams
-//			BufferedReader br = new BufferedReader(
-//				new InputStreamReader(socket.getInputStream()));
-//			PrintWriter pw = new PrintWriter(
-//				new OutputStreamWriter(socket.getOutputStream())); 
-			
-//			while (true) {
-//				String msg = br.readLine(); 
-//				// TODO: CHECK MESSAGE TYPE 
-//				String[] splitMsg = msg.split("_H3lp_");
-//				if (splitMsg[1].equalsIgnoreCase("M")) {
-//					// Transmission is a message 
-//					// Get sender 
-//					String sender = splitMsg[2]; 
-//					String message = splitMsg[3];
-//					
-//					appendChat(sender + ": " + message);
-//					
-//				}
-//			}
 			System.out.println(IP_ADDRESS);			
-			chatReaders.add(new ChatReader(socket));
+			ChatReader cr = new ChatReader(socket);
+			cr.start();
 			
 		} catch (Exception e) {
 			
@@ -358,7 +338,8 @@ public class GUI extends JFrame{
 				new OutputStreamWriter(socket.getOutputStream())); 
 				
 			String regex = "_h3lp_";
-			System.out.println("PW: " + pw.toString());
+			// TESTING PURPOSES:
+			// System.out.println("PW: " + pw.toString());
 			pw.println(regex + transmissionType + regex + userName + regex + transmissionContent);
 			pw.flush();
 		} catch (Exception e) {
@@ -396,6 +377,14 @@ public class GUI extends JFrame{
 		chatTextArea.append(s + "\n"); 
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static class ChatReader extends Thread {
 		private Socket socket; 
 		
@@ -407,67 +396,39 @@ public class GUI extends JFrame{
 		}
 		
 		public void run() {
-			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-				
-				do {
-					System.out.println("ChatReader Started");
-					String transmission = br.readLine(); 
-					/// LOGIC FOR PROCESSING TRANSMISSIONS FROM SERVER  /// 
-					
-					System.out.println("Transmission recieved");
-					System.out.println("Transmission: " + transmission);
-					
-					String transmissionType = null; 
-					String transmissionSender = null; 
-					String transmissionContent = null; 
-					
-					try {
-						String[] splitMsg = transmission.split("_h3lp_"); 
-						transmissionType = splitMsg[1];
-						System.out.println("Transmission Type: " + transmissionType); 
-						transmissionSender = splitMsg[2];
-						System.out.println("Transmission Sender: " + transmissionSender); 
-						transmissionContent = splitMsg[3]; 
-						System.out.println("Transmission Content: " + transmissionContent); 
-					} catch (Exception e) {
-						System.out.println("Unable to parse message");
-					}
+			
+			System.out.println("Chatreader Started");
 
-					// Transmission is a MESSAGE 
-					if (transmissionType.equals("M")) {
-						System.out.println("Message Recieved");
-						appendChat(transmissionSender + ": " + transmissionContent);
-					}
-					// Transmission is an ATTACK 
-					else if (transmissionType.equals("A")) {
-						// 
-						// ADD 
-						// LOGIC 
-						// HERE 
-						//
-					}
-					// Transmission is a STATUS UPDATE 
-					else if (transmissionType.equals("S")) {
-						// 
-						// ADD 
-						// LOGIC 
-						// HERE 
-						//
-					}
-					else {
-						System.out.println("Error parsing transmission"); 
-					}
-
-				} while(connected);
-			} catch (Exception e) {
-				System.out.println("Error creating reader streamss"); 
-				e.getMessage();
-				e.printStackTrace();
+			int i = 0; 
+			
+			connected = true;
+			
+			while (connected) {
+				pullFromServer();
+				System.out.println(i); 
+				try	{
+					this.sleep(100);
+				} catch (Exception e) {
+					e.getMessage();
+					e.printStackTrace();
+				}
 			}
 		}
 		
+		
+		public void pullFromServer(){
+			try {
+				System.out.println("In try");
+				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				String transmission = br.readLine(); 
+				System.out.println(transmission);
+				appendChat(transmission);
+				System.out.println("");
+			} catch (Exception e) {
+				e.getMessage(); 
+				e.printStackTrace();
+			}	
+		}
 		
 	}
 	
