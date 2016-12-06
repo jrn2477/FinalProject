@@ -34,6 +34,7 @@ public class GUI extends JFrame{
 	private static PrintWriter pw; 
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
+	private static ArrayList<String> connectedUserList = new ArrayList<String>(); 
 	
 	/*
 		Default Constructor 
@@ -326,7 +327,20 @@ public class GUI extends JFrame{
 		try {
 			// Create connection
 			socket = new Socket(IP_ADDRESS,Integer.parseInt(PORT)); 
-			System.out.println(IP_ADDRESS);			
+			System.out.println("Connect to Server at: " + IP_ADDRESS);		
+			
+			// Pass the username to server
+			try {
+				pw = new PrintWriter(new OutputStreamWriter(
+					socket.getOutputStream())); 
+				pw.println("_US3R_" + SCREEN_NAME);
+				pw.flush(); 
+			} catch (Exception e) {
+				System.out.println("Unable to send username to server"); 
+				e.getMessage(); 
+				e.printStackTrace();
+			}
+				
 			ChatReader cr = new ChatReader(socket);
 			cr.start();
 			
@@ -391,12 +405,6 @@ public class GUI extends JFrame{
 		chatTextArea.append(s + "\n"); 
 	}
 	
-	
-	
-	
-	
-	
-	
 	/*
 		Inner Class that creates a thread to constantly read in transmissions 
 		recieved from the server without stopping other functionality as reqiured. 
@@ -455,13 +463,12 @@ public class GUI extends JFrame{
 		*/ 
 		public void pullFromServer(){
 			try {
-				System.out.println("In try");
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				// FOR TESTING --> System.out.println("In try");
+				BufferedReader br = new BufferedReader(
+					new InputStreamReader(socket.getInputStream()));
 				String transmission = br.readLine(); 
 				System.out.println(transmission);
 				
-				
-				//
 				//  ADD CODE FOR TRANSMISSION PROCESSING 
 				processTransmission(transmission);
 								
@@ -481,13 +488,23 @@ public class GUI extends JFrame{
 		@version: 12/5/16
 	*/ 
 	public static void processTransmission(String trans) {
-		String[] splitTrans = trans.split(REGEX); 
 		
-		if (splitTrans[1].equals("M")) {
-			// Transmission is a message 
-			processMessage(splitTrans[2], splitTrans[3]);
+		if (trans.startsWith(REGEX)) {
+			String[] splitTrans = trans.split(REGEX); 
+			
+			if (splitTrans[1].equals("M")) {
+				// Transmission is a message 
+				processMessage(splitTrans[2], splitTrans[3]);
+			}
 		}
-		
+		if (trans.startsWith("_N3WUS3R_")) {
+			// get username 
+			int startPos = ("_N3WUS3R_").length();
+			String name = trans.substring(startPos); 
+			
+			// update userlist 
+			addUser(name);
+		}
 	}
 	
 	/*
@@ -514,6 +531,37 @@ public class GUI extends JFrame{
 	*/ 
 	public void processStatusChange(){
 		
+	}
+	
+	/*
+		Method to add User List 
+			Calls updateUserList to update the GUI with the new Users 
+		@author: Jason Nordheim 
+		@version: 12/6/16 
+		@param newUser: the user to be added 
+		@return void 
+	*/ 
+	public static void addUser(String newUser){ 
+		connectedUserList.add(newUser); 
+		updateUserList();
+	}
+	
+	/*
+		Method to update the displayed userlist of connected clients 
+			Appends userList (JTextArea) with users 
+		@author: Jason Nordheim 
+		@version: 12/6/16 
+		@param: null 
+		@return: void 
+	*/ 
+	public static void updateUserList(){
+		// clear the user list box 
+		userList.setText(null);
+		// iterate through the list of connected user 
+		// and add them to the JTextarea
+		for (String s: connectedUserList) {
+			userList.append(s + "\n");
+		}
 	}
 	
 	

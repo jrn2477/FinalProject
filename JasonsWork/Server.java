@@ -86,13 +86,25 @@ public class Server {
 				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
 				
 				transmission = br.readLine(); 
+				System.out.println("Server Recieved transmission: " + transmission); 
+
 				
-				System.out.println("Server Recieved: " + transmission); 
-				
-				
-				// Send the transmission verbatem to all connected clients
-				for (ThreadedServer ths : connectedClients) {
-					((ThreadedServer)ths).sendTransmission(transmission);
+				if (transmission.startsWith("_US3R_")) {
+					// Process Username 
+					String usrName = transmission.substring(6); 
+					screenName = usrName; 
+					System.out.println("User <" + screenName + "> connected"); 
+					
+					// Send username to connected clients 
+					for (ThreadedServer ths : connectedClients) {
+						((ThreadedServer)ths).announceNewUser(screenName);
+					}
+				} else {
+					
+					// Send the transmission verbatem to all connected clients
+					for (ThreadedServer ths : connectedClients) {
+						((ThreadedServer)ths).sendTransmission(transmission);
+					}
 				}
 			} catch (Exception e) {
 				System.out.println("Error creating input/output streams"); 
@@ -117,6 +129,19 @@ public class Server {
 			} catch (Exception e) {
 				System.out.println("Error sending transmission"); 
 				e.getMessage(); 
+				e.printStackTrace();
+			}
+		}
+		
+		public void announceNewUser(String userName) {
+			PrintWriter pw; 
+			try {
+				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
+				pw.println("_N3WUS3R_" + userName); 
+				pw.flush();
+			} catch (Exception e) {
+				System.out.println("Error sending username to clients"); 
+				e.getMessage();
 				e.printStackTrace();
 			}
 		}
