@@ -17,6 +17,10 @@ public class GUI extends JFrame{
 	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
 	private static final String YOUR_BOARD = "Your Board"; 
 	private static final String REGEX = "_h3ll_"; 
+	private static final String MESSAGE_INDICATOR = "M"; 
+	private static final String ATTACK_INDICATOR = "A";
+	private static final String STATUS_INDICATOR = "S";  
+	
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JPanel> board1 = new ArrayList<JPanel>(); 
 	private ArrayList<JPanel> board2 = new ArrayList<JPanel>(); 
@@ -315,6 +319,8 @@ public class GUI extends JFrame{
 	/*
 		@author: Jason Nordheim
 		@version: 12/2/16 
+		@param: void 
+		@return: void 
 		*/ 
 	public static void createConnection(){
 		try {
@@ -328,7 +334,14 @@ public class GUI extends JFrame{
 			
 		}
 	}
-	
+	/*
+		Method to send a transmission to the server 
+		@author: Jason Nordheim 
+		@version: 12/5/16 
+		@param: transmissionType - the type of transimssion to be sent 
+		@param: transmissionContent - the content of the transmission sent 
+		@param: userName - the user name of the person sending the message. 
+	*/ 
 	public void sendTransmission(String transmissionType, String transmissionContent, String userName) {
 		try {
 			// Create connection
@@ -384,18 +397,35 @@ public class GUI extends JFrame{
 	
 	
 	
-	
-	
+	/*
+		Inner Class that creates a thread to constantly read in transmissions 
+		recieved from the server without stopping other functionality as reqiured. 
+		@author: Jason Nordheim 
+		@version: 12/5/16
+	*/ 
 	public static class ChatReader extends Thread {
 		private Socket socket; 
 		
-		
+		/*
+			Default Constructor - creates ChatReader object 
+			@author: Jason Nordheim 
+			@version: 12/5/16 
+			@return: null 
+		*/ 
 		public ChatReader(Socket s){
 			socket = s; 
 			connected = true;
 			chatReaders.add(this);
 		}
 		
+		/*
+			Run Method - Activiated by .start() command 
+				begins thread actions 
+			@author: Jason Nordheim 
+			@version: 12/5/16 
+			@param: void 
+			@return: void 
+		*/
 		public void run() {
 			
 			System.out.println("Chatreader Started");
@@ -416,7 +446,13 @@ public class GUI extends JFrame{
 			}
 		}
 		
-		
+		/*
+			Method to check the server and pull and transmissions sent by the server 
+			@author: Jason Nordheim 
+			@version: 12/5/16 
+			@param: void 
+			@return: void 
+		*/ 
 		public void pullFromServer(){
 			try {
 				System.out.println("In try");
@@ -437,6 +473,13 @@ public class GUI extends JFrame{
 		
 	}
 	
+	/* 
+		Method to Process Transmissions from the server, the method will parse 
+		the transmission to determine the type of transmission before processing 
+		@author: Jason Nordheim 
+		@param: trans - the transmission recieved from the server 
+		@version: 12/5/16
+	*/ 
 	public static void processTransmission(String trans) {
 		String[] splitTrans = trans.split(REGEX); 
 		
@@ -447,18 +490,36 @@ public class GUI extends JFrame{
 		
 	}
 	
+	/*
+		Method to be called the processTransmission Method, at this point the transmission 
+		has been determined to be a message, and associated actions should be taken 
+		@author: Jason Nordheim 
+		@version: 12/5/16 
+		@param usr - the user sending the messag e
+		@param msg - the message being sent by the user 
+	*/ 
 	public static void processMessage(String usr, String msg){
 		appendChat(usr + ": " + msg);
 	}
 	
+	/*
+		Method to process game move 
+	*/ 
 	public void processGameMove(){
 		
 	}
 	
+	/*
+		Method to process a status change 
+	*/ 
 	public void processStatusChange(){
 		
 	}
 	
+	
+	/*
+		Main Method - launches application 
+	*/ 
 	public static void main(String[] args) {
 		new GUI();	
 	}
