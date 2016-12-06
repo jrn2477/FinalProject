@@ -16,6 +16,7 @@ public class GUI extends JFrame{
 	
 	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
 	private static final String YOUR_BOARD = "Your Board"; 
+	private static final String REGEX = "_h3ll_"; 
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JPanel> board1 = new ArrayList<JPanel>(); 
 	private ArrayList<JPanel> board2 = new ArrayList<JPanel>(); 
@@ -337,7 +338,7 @@ public class GUI extends JFrame{
 			PrintWriter pw = new PrintWriter(
 				new OutputStreamWriter(socket.getOutputStream())); 
 				
-			String regex = "_h3lp_";
+			String regex = REGEX;
 			// TESTING PURPOSES:
 			// System.out.println("PW: " + pw.toString());
 			pw.println(regex + transmissionType + regex + userName + regex + transmissionContent);
@@ -422,9 +423,13 @@ public class GUI extends JFrame{
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String transmission = br.readLine(); 
 				System.out.println(transmission);
-				appendChat(transmission);
-				System.out.println("");
-			} catch (Exception e) {
+				
+				
+				//
+				//  ADD CODE FOR TRANSMISSION PROCESSING 
+				processTransmission(transmission);
+								
+				} catch (Exception e) {
 				e.getMessage(); 
 				e.printStackTrace();
 			}	
@@ -432,6 +437,27 @@ public class GUI extends JFrame{
 		
 	}
 	
+	public static void processTransmission(String trans) {
+		String[] splitTrans = trans.split(REGEX); 
+		
+		if (splitTrans[1].equals("M")) {
+			// Transmission is a message 
+			processMessage(splitTrans[2], splitTrans[3]);
+		}
+		
+	}
+	
+	public static void processMessage(String usr, String msg){
+		appendChat(usr + ": " + msg);
+	}
+	
+	public void processGameMove(){
+		
+	}
+	
+	public void processStatusChange(){
+		
+	}
 	
 	public static void main(String[] args) {
 		new GUI();	
