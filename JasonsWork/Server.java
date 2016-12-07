@@ -3,11 +3,19 @@ import java.io.*;
 import java.util.*;
 import java.nio.*;
 
+/*
+	@author: Team Flying Mongooeses (Nick Kowalczuk, Jason Nordheim, Lauren Hoffman) 
+	@version: 12/4/16 - revised 12/6/16 
+	@description: ... 
+	
+*/ 
 public class Server {
 	
 	private static int PORT = 6760;
-	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>();
-	private static ArrayList<String> connectedUsers = new ArrayList<String>();
+	// the connections of clients 
+	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>(); 	
+	// names of the people who are connected
+	private static ArrayList<String> connectedUsers = new ArrayList<String>(); 
 	
 	/* 
 		Default Constructor 

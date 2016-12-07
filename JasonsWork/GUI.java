@@ -8,7 +8,7 @@ import java.net.*;
 import java.io.*;
 
 /*
-	@author: Jason Norhdeim 
+	@author: Team Flying Mongooses (Nick Koowalcuk, Lauren Hoffman, Jason Nordheim) 
 	@version: 11/30/16 v1 
 	@decription: Class responsible for the visual interface of the client 
 */ 
@@ -557,40 +557,6 @@ public class GUI extends JFrame{
 			userList.append(s + "\n");
 		}
 	}
-		
-	public static void parseTransmittedUserList(String uList){
-		boolean keepGoing = true; 
-		ArrayList<String> tempList = new ArrayList<String>(); 
-		int startPos = 0; 
-		int endPos = uList.length();
-		CharSequence cs = "$3$"; 
-		int i = 0; 
-		String tempString = uList; 
-		
-		if (keepGoing) {
-			if (tempString.contains(cs)) {
-				int index = tempString.indexOf("$3$"); 
-				String user = tempString.substring(startPos, index);
-				System.out.println(user);
-				tempList.add(user); 
-				
-				//startPos = (user.length() + 3); 
-				tempString = tempString.substring((index + 3), endPos);
-				System.out.println("New String: " + i + " " + tempString);
-				i++; 
-			} else {
-				keepGoing = false;
-			}
-		}
-		
-		for (i = connectedUserList.size(); i > 0; i--) {
-			connectedUserList.remove(i);
-		}
-		for (i = 0; i < tempList.size(); i++) {
-			connectedUserList.add(tempList.get(i));
-		}
-	}
-	
 		
 	
 	/*
