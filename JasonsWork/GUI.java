@@ -22,8 +22,8 @@ public class GUI extends JFrame{
 	private static final String STATUS_INDICATOR = "S";  
 	
 	private static final String OPP_BOARD = "Opponents Board"; 
-	private ArrayList<JPanel> board1 = new ArrayList<JPanel>(); 
-	private ArrayList<JPanel> board2 = new ArrayList<JPanel>(); 
+	private ArrayList<JButton> board1 = new ArrayList<JButton>(); 
+	private ArrayList<JButton> board2 = new ArrayList<JButton>(); 
 	private JPanel myBoardPanel, oppBoardPanel, boardsPanel, gamePanel, gameBoard1, gameBoard2, 
 		chatPanel, shipPositionsPanel, connectionPanel; 
 	private static JTextArea chatTextArea, userList; 
@@ -42,6 +42,7 @@ public class GUI extends JFrame{
 		@version: 11/20/16 
 	*/ 
 	public GUI(){
+		//Listener listen = new Listener(); 
 		setTitle("Let's Play Battleship"); 
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE); 
@@ -388,14 +389,15 @@ public class GUI extends JFrame{
 		@param: ArrayList which will store each position panel 
 		@return: JPanel of board
 	*/ 
-	public JPanel makeBoard(ArrayList<JPanel> aryLst){
+	public JPanel makeBoard(ArrayList<JButton> aryLst){
 		JPanel board = new JPanel(new GridLayout(8,8)); 
 		for (int i = 1; i < 65; i++) {
-			JPanel p = new JPanel(); 
-			aryLst.add(p); 
-			aryLst.get(i-1).setSize(80,80); 
+			JButton b = new JButton(Integer.toString(i)); 
+			aryLst.add(b); 
+			aryLst.get(i-1).setPreferredSize(new Dimension(35,35)); 
 			aryLst.get(i-1).setBorder(LineBorder.createBlackLineBorder());
-			aryLst.get(i-1).add(new JLabel(Integer.toString(i))); 
+			// REMOVED -- aryLst.get(i-1).add(new JLabel(Integer.toString(i))); -- 
+			
 			board.add(aryLst.get(i-1)); 
 		}
 		return board; 
@@ -404,6 +406,24 @@ public class GUI extends JFrame{
 	public static void appendChat(String s) {
 		chatTextArea.append(s + "\n"); 
 	}
+	
+	
+//	public class Listener implements ActionListener {
+//		
+//		public Listener(){
+//			
+//		}
+//		
+//		public void actionPerformed(ActionEvent ae) {
+//			Object o = ae.getSource(); 
+//			
+//			// If it is a hit 
+//			JPanel p = o; 
+//			p.setBackground(Color.RED); 
+//		}
+//	}
+	
+	
 	
 	/*
 		Inner Class that creates a thread to constantly read in transmissions 
