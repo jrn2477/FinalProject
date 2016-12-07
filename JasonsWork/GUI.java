@@ -34,7 +34,9 @@ public class GUI extends JFrame{
 	private static PrintWriter pw; 
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
-	public static ArrayList<String> connectedUserList = new ArrayList<String>(); 
+	public static ArrayList<String> connectedUserList = new ArrayList<String>();
+	
+	private int[] shipLocations;
 	
 	/*
 		Default Constructor 
@@ -115,32 +117,78 @@ public class GUI extends JFrame{
 		// disable fields by default 
 		// Ship 1 Textfields 
 		JTextField ship1bow = new JTextField(2);
-		ship1bow.setEditable(false); 
+		//ship1bow.setEditable(false); 
 		JTextField ship2bow = new JTextField(2);
-		ship2bow.setEditable(false);
+		//ship2bow.setEditable(false);
 		JTextField ship3bow = new JTextField(2);
-		ship3bow.setEditable(false);
+		//ship3bow.setEditable(false);
 		
 		// Ship 2 Textfields 
 		JTextField ship1mid = new JTextField(2);
-		ship1mid.setEditable(false); 
+		//ship1mid.setEditable(false); 
 		JTextField ship2mid = new JTextField(2);
-		ship2mid.setEditable(false); 
+		//ship2mid.setEditable(false); 
 		JTextField ship3mid = new JTextField(2);
-		ship3mid.setEditable(false);	
+		//ship3mid.setEditable(false);	
 		
 		// ship 3 textfields 
 		JTextField ship1stern = new JTextField(2);
-		ship1stern.setEditable(false); 
+		//ship1stern.setEditable(false); 
 		JTextField ship2stern = new JTextField(2);
-		ship2stern.setEditable(false); 
+		//ship2stern.setEditable(false); 
 		JTextField ship3stern = new JTextField(2);
-		ship3stern.setEditable(false);	
+		//ship3stern.setEditable(false);	//TODO uncomment these when out of development
 		
 		// place ships button
-		placeshipsBtn = new JButton("Place Ships!"); 
+		placeshipsBtn = new JButton("Place Ships!");
 		placeshipsBtn.setHorizontalAlignment(JButton.CENTER); 	
-		placeshipsBtn.setEnabled(false);
+		//placeshipsBtn.setEnabled(false);
+		placeshipsBtn.addActionListener(new ActionListener (){
+			public void actionPerformed(ActionEvent ae){
+				System.out.println("you pressed that button");
+				boolean validShips = true;
+				int s1Bow = Integer.parseInt(ship1bow.getText());
+				int s1Mid = Integer.parseInt(ship1mid.getText());
+				int s1Stern = Integer.parseInt(ship1stern.getText());
+				
+				int s2Bow = Integer.parseInt(ship2bow.getText());
+				int s2Mid = Integer.parseInt(ship2mid.getText());
+				int s2Stern = Integer.parseInt(ship2stern.getText());
+				
+				int s3Bow = Integer.parseInt(ship3bow.getText());
+				int s3Mid = Integer.parseInt(ship3mid.getText());
+				int s3Stern = Integer.parseInt(ship3stern.getText());
+				
+				ArrayList<Integer> locs = new ArrayList<Integer>();
+				locs.add(s1Bow);
+				locs.add(s1Mid);
+				locs.add(s1Stern);
+				locs.add(s2Bow);
+				locs.add(s2Mid);
+				locs.add(s2Stern);
+				locs.add(s3Bow);
+				locs.add(s3Mid);
+				locs.add(s3Stern);
+				for (int i = 0; i < 9; i++) {//checks to see if any ships overlap
+					if(locs.indexOf(locs.get(i)) != i){
+						validShips = false;
+						System.out.println("ships overlap; get fucked");
+					}
+					if(locs.get(i) > 64 || locs.get(i) < 1){//ensures that all ships are in bounds
+						System.out.println("ships out of bounds; get fucked");
+						validShips = false;
+					}
+				}
+				
+				if(validShips && checkValidLocation(s1Bow, s1Mid, s1Stern)
+				&& checkValidLocation(s2Bow, s2Mid, s2Stern)
+				&& checkValidLocation(s3Bow, s3Mid, s3Stern)){
+					addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+					addSimultaneousShip(s2Bow, s2Mid, s2Stern);
+					addSimultaneousShip(s3Bow, s3Mid, s3Stern);
+				}
+			}
+		});
 		
 		shipPositionsPanel = new JPanel(new GridLayout(3,7));
 		
@@ -422,6 +470,7 @@ public class GUI extends JFrame{
 //			p.setBackground(Color.RED); 
 //		}
 //	}
+
 	
 	
 	
@@ -546,6 +595,89 @@ public class GUI extends JFrame{
 		appendChat(usr + ": " + msg);
 	}
 	
+	public void addSimultaneousShip(int bow, int mid, int stern){
+		bow--;
+		mid--;
+		stern--;
+
+		final Color friendlyShipColor = Color.GRAY;
+		//now we actually "place" the ship
+		//re color my board
+		board1.get(bow).setOpaque(true);//if the boxes are not set to be opaque, they will not change color.
+		board1.get(bow).setBackground(friendlyShipColor);
+		board1.get(mid).setOpaque(true);
+		board1.get(mid).setBackground(friendlyShipColor);
+		board1.get(stern).setOpaque(true);
+		board1.get(stern).setBackground(friendlyShipColor);
+	}
+	
+	public boolean checkValidLocation(int bow, int mid, int stern){
+		boolean goodMove = true;
+		bow--;
+		mid--;
+		stern--;
+		int sternCol = stern%8;
+		int sternRow = stern/8;
+		int midCol = mid%8;
+		int midRow = mid/8;
+		int bowCol = bow%8;
+		int bowRow = bow/8;
+		
+		if(	(bow < 0 || bow > 63)||
+		(mid < 0 || mid > 63)||
+		(stern < 0 || stern > 63)){
+			goodMove =  false;
+		}
+
+		if(goodMove && sternCol == midCol && midCol == bowCol){
+			if(sternRow == midRow+1){
+				if(midRow == bowRow +1){
+					
+				}
+				else{
+					goodMove = false;
+				}
+			}
+			else if(sternRow == midRow-1){
+				if(midRow == bowRow - 1){
+					
+				}
+				else{
+					goodMove = false;
+				}
+			}
+			else{
+				goodMove = false;
+			}
+		}
+		else if(goodMove && sternRow == midRow && midRow == bowRow){
+			if(sternCol == midCol + 1){
+				if(midCol == bowCol + 1){
+				}
+				else {
+					goodMove = false;
+				}
+			}
+			else if(sternCol == midCol - 1){
+				if(midCol == bowCol - 1){
+					
+				}
+				else{
+					goodMove = false;
+				}
+			}
+			else{
+				goodMove = false;
+			}	
+		}
+		else{
+			if(goodMove){
+				goodMove = false;
+			}
+		}
+		return goodMove;
+	}
+	
 	/*
 		Method to process game move 
 	*/ 
@@ -583,7 +715,7 @@ public class GUI extends JFrame{
 		Main Method - launches application 
 	*/ 
 	public static void main(String[] args) {
-		new GUI();	
+		GUI test = new GUI();
 	}
 	
 }

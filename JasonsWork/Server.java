@@ -15,7 +15,9 @@ public class Server {
 	// the connections of clients 
 	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>(); 	
 	// names of the people who are connected
-	private static ArrayList<String> connectedUsers = new ArrayList<String>(); 
+	private static ArrayList<String> connectedUsers = new ArrayList<String>();
+	// queue of clients who have not yet been placed into a game
+	private  
 	
 	/* 
 		Default Constructor 
