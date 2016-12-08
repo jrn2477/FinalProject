@@ -2,6 +2,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.nio.*;
+import java.util.concurrent.*;
 
 /*
 	@author: Team Flying Mongooeses (Nick Kowalczuk, Jason Nordheim, Lauren Hoffman) 
@@ -17,7 +18,9 @@ public class Server {
 	// names of the people who are connected
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
-	private  
+	private ConcurrentLinkedQueue<ThreadedServer> matchMakingQueue = new ConcurrentLinkedQueue<ThreadedServer>();
+	private final String REGEX = "_h3ll_";//used in server generated transmissions
+	private static final String GAME_PLACEMENT_INDICATOR = "GP"; //indicates that the transmission contains the game ID in which the user has been placed
 	
 	/* 
 		Default Constructor 
@@ -45,11 +48,18 @@ public class Server {
 			
 			// Continue to accept clients 
 			Boolean keepRunning = true; 
+			int matchCount = 0;
 			while (keepRunning) {
 				cs = ss.accept();
 				ThreadedServer ths = new ThreadedServer(cs); 
 				ths.start();
 				connectedClients.add(ths);
+				matchMakingQueue.add(ths);
+				if(matchMakingQueue.size()> 1){
+					matchCount++;
+					matchMakingQueue.poll().setGameID(matchCount);
+					matchMakingQueue.poll().setGameID(matchCount);
+				}
 			}
 		} catch (Exception e) {
 			// Something went wrong 
@@ -141,6 +151,21 @@ public class Server {
 				e.getMessage(); 
 				e.printStackTrace();
 			}
+		}
+		/*
+		** Sets the game ID of the current client by sending a formatted string informing them of their game ID.
+		** Is basically a shell method that calls sendTransmission()
+		** @author Nick Kowalczuk
+		** @version 12-7-16
+		** @param gameNum the new game ID number to be sent to the client.
+		** @return void
+		*/
+		public void setGameID(int gameNum){
+			sendTransmission(REGEX+GAME_PLACEMENT_INDICATOR+REGEX+gameNum);
+			//sends a transmission to user indicating the game in which the have been placed
+			//client-side: see processTransmission().
+			//this might not work, I didnt test it.
+			//TODO test this.
 		}
 		
 		public void announceUsers() {

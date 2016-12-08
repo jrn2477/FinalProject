@@ -19,7 +19,8 @@ public class GUI extends JFrame{
 	private static final String REGEX = "_h3ll_"; 
 	private static final String MESSAGE_INDICATOR = "M"; 
 	private static final String ATTACK_INDICATOR = "A";
-	private static final String STATUS_INDICATOR = "S";  
+	private static final String STATUS_INDICATOR = "S";
+	private static final String GAME_PLACEMENT_INDICATOR = "GP";  
 	
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JButton> board1 = new ArrayList<JButton>(); 
@@ -35,6 +36,7 @@ public class GUI extends JFrame{
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
 	public static ArrayList<String> connectedUserList = new ArrayList<String>();
+	//private static int gameID;//will indicate which game the user is in
 	
 	private int[] shipLocations;
 	
@@ -147,18 +149,53 @@ public class GUI extends JFrame{
 			public void actionPerformed(ActionEvent ae){
 				System.out.println("you pressed that button");
 				boolean validShips = true;
-				int s1Bow = Integer.parseInt(ship1bow.getText());
-				int s1Mid = Integer.parseInt(ship1mid.getText());
-				int s1Stern = Integer.parseInt(ship1stern.getText());
 				
-				int s2Bow = Integer.parseInt(ship2bow.getText());
-				int s2Mid = Integer.parseInt(ship2mid.getText());
-				int s2Stern = Integer.parseInt(ship2stern.getText());
+				// default ship position to impossible position 
+				// of negative 1 
+				int s1Bow = -1; 
+				int s1Mid = -1; 				
+				int s1Stern = -1; 
 				
-				int s3Bow = Integer.parseInt(ship3bow.getText());
-				int s3Mid = Integer.parseInt(ship3mid.getText());
-				int s3Stern = Integer.parseInt(ship3stern.getText());
+				int s2Bow = -1;
+				int s2Mid = -1;
+				int s2Stern = -1; 
 				
+				int s3Bow = -1; 
+				int s3Mid = -1; 
+				int s3Stern = -1; 
+				
+				// Check ship 1 positioning 
+				try {
+					s1Bow = Integer.parseInt(ship1bow.getText());
+					s1Mid = Integer.parseInt(ship1mid.getText());
+					s1Stern = Integer.parseInt(ship1stern.getText());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 1",
+						 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				// Check ship 2 positioning 
+				try {
+					s2Bow = Integer.parseInt(ship2bow.getText());
+					s2Mid = Integer.parseInt(ship2mid.getText());
+					s2Stern = Integer.parseInt(ship2stern.getText());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 2", 
+						"Ship Placement Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				// Check ship 3 positioning 
+				try {
+					s3Bow = Integer.parseInt(ship3bow.getText());
+					s1Mid = Integer.parseInt(ship1mid.getText());
+					s1Stern = Integer.parseInt(ship1stern.getText());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 3", 
+						"Ship Placement", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				
+				//TODO catch exceptions thrown by somebody putting in a non numeric value here. and trying to Integer.parseInt().
 				ArrayList<Integer> locs = new ArrayList<Integer>();
 				locs.add(s1Bow);
 				locs.add(s1Mid);
@@ -556,16 +593,24 @@ public class GUI extends JFrame{
 		@param: trans - the transmission recieved from the server 
 		@version: 12/5/16
 	*/ 
+	//Why is this static? -Nick
 	public static void processTransmission(String trans) {
 		
 		if (trans.startsWith(REGEX)) {
 			String[] splitTrans = trans.split(REGEX); 
 			
-			if (splitTrans[1].equals("M")) {
+			if (splitTrans[1].equals(MESSAGE_INDICATOR)) {//changed this to constant value as declared above -Nick
 				// Transmission is a message 
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
+			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){//-Nick
+				//gameID = Integer.parseInt(splitTrans[2]);//this SHOULD contain the new game ID
+				//TODO make sure that it still works when gameID is static, which I had to do to make this method compile.
+				//we could get around this if we made the game ID an attribute of the thread rather than of the GUI.java.8
+				//nevermind, it all has to be static due to the way that the thing checks for messages.
+			}
 		}
+		
 		if (trans.startsWith("_N3WUS3R_")) {
 			// get username 
 			int startPos = ("_N3WUS3R_").length();
@@ -609,6 +654,7 @@ public class GUI extends JFrame{
 		board1.get(mid).setBackground(friendlyShipColor);
 		board1.get(stern).setOpaque(true);
 		board1.get(stern).setBackground(friendlyShipColor);
+		//TODO these values are still not currently stored anywhere, the change is purely aesthetic. so, figure that out soon. could probably just be done in an int[] containing indexes of valid ships.
 	}
 	
 	public boolean checkValidLocation(int bow, int mid, int stern){
