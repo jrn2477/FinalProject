@@ -12,7 +12,7 @@ import java.io.*;
 	@version: 11/30/16 v1 
 	@decription: Class responsible for the visual interface of the client 
 */ 
-public class GUI extends JFrame{
+public class GUI extends JFrame implements ActionListener{
 	
 	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
 	private static final String YOUR_BOARD = "Your Board"; 
@@ -20,7 +20,9 @@ public class GUI extends JFrame{
 	private static final String MESSAGE_INDICATOR = "M"; 
 	private static final String ATTACK_INDICATOR = "A";
 	private static final String STATUS_INDICATOR = "S";
-	private static final String GAME_PLACEMENT_INDICATOR = "GP";  
+	private static final String GAME_PLACEMENT_INDICATOR = "GP";
+	private static final String GAME_MOVE = "GM"; 
+	private static final String GAME_RESPONSE  = "GR"; 
 	
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JButton> board1 = new ArrayList<JButton>(); 
@@ -195,7 +197,8 @@ public class GUI extends JFrame{
 				}
 				
 				
-				//TODO catch exceptions thrown by somebody putting in a non numeric value here. and trying to Integer.parseInt().
+				//TODO catch exceptions thrown by somebody putting in a non numeric value here. 
+				// and trying to Integer.parseInt().
 				ArrayList<Integer> locs = new ArrayList<Integer>();
 				locs.add(s1Bow);
 				locs.add(s1Mid);
@@ -754,6 +757,24 @@ public class GUI extends JFrame{
 		for (String s: connectedUserList) {
 			userList.append(s + "\n");
 		}
+	}
+	
+	
+	public void actionPerformed(ActionEvent ae) {
+		// o is the object that was clicked 
+		Object o = ae.getSource(); 
+		JButton jb; 
+		
+		try {
+			jb = (JButton)o; 
+		} catch (Exception e) {
+			System.out.println("Unable to cast Object to JButton"); 
+		}
+		
+		// NOTE: That location will be 1 greater than ArrayList location 
+		sendTransmission(GAME_MOVE, jb.getText(), SCREEN_NAME); 
+		
+
 	}
 		
 	
