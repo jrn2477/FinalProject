@@ -771,6 +771,9 @@ public class GUI extends JFrame implements ActionListener{
 			System.out.println("Unable to cast Object to JButton"); 
 		}
 		
+		// Testing 1 2 3 
+		
+		
 		// NOTE: That location will be 1 greater than ArrayList location 
 		sendTransmission(GAME_MOVE, jb.getText(), SCREEN_NAME); 
 		
