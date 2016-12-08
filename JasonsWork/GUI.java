@@ -772,7 +772,7 @@ public class GUI extends JFrame implements ActionListener{
 		}
 		
 		// Testing 1 2 3 
-		
+		// Testiing 456
 		
 		// NOTE: That location will be 1 greater than ArrayList location 
 		sendTransmission(GAME_MOVE, jb.getText(), SCREEN_NAME); 
