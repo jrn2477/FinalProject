@@ -39,7 +39,7 @@ public class GUI extends JFrame implements ActionListener{
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
 	public static ArrayList<String> connectedUserList = new ArrayList<String>();
-	//private static int gameID;//will indicate which game the user is in
+	private static int gameID;//will indicate which game the user is in
 	
 	private int[] shipLocations;
 	
@@ -626,7 +626,7 @@ public class GUI extends JFrame implements ActionListener{
 				// Position as a string 
 				String tempPos = splitTrans[3];
 				// getting the position of the button in the ArrayList
-				int attackPos = Integer.parseInt(temp) - 1;
+				int attackPos = Integer.parseInt(tempPos) - 1;
 				// Store game id				
 				
 				// TODO: 
