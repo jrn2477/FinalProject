@@ -23,6 +23,7 @@ public class GUI extends JFrame implements ActionListener{
 	private static final String GAME_PLACEMENT_INDICATOR = "GP";
 	private static final String GAME_MOVE = "GM"; 
 	private static final String GAME_RESPONSE  = "GR"; 
+	private static int GAME_ID; // Null until placed into game. 
 	
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JButton> board1 = new ArrayList<JButton>(); 
@@ -212,10 +213,10 @@ public class GUI extends JFrame implements ActionListener{
 				for (int i = 0; i < 9; i++) {//checks to see if any ships overlap
 					if(locs.indexOf(locs.get(i)) != i){
 						validShips = false;
-						System.out.println("ships overlap; get fucked");
+						System.out.println("Ships overlap");
 					}
 					if(locs.get(i) > 64 || locs.get(i) < 1){//ensures that all ships are in bounds
-						System.out.println("ships out of bounds; get fucked");
+						System.out.println("Ships out of bounds");
 						validShips = false;
 					}
 				}
@@ -607,11 +608,33 @@ public class GUI extends JFrame implements ActionListener{
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
 			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){//-Nick
-				//gameID = Integer.parseInt(splitTrans[2]);//this SHOULD contain the new game ID
-				//TODO make sure that it still works when gameID is static, which I had to do to make this method compile.
-				//we could get around this if we made the game ID an attribute of the thread rather than of the GUI.java.8
-				//nevermind, it all has to be static due to the way that the thing checks for messages.
+				//gameID = Integer.parseInt(splitTrans[2]); //this SHOULD contain the new game ID
+				//TODO make sure that it still works when gameID is static, 
+				// which I had to do to make this method compile.
+				
+				//we could get around this if we made the game ID an attribute of
+				//  the thread rather than of the GUI.java.8
+				
+				//nevermind, it all has to be static due to the way that 
+				// the thing checks for messages.
+				GAME_ID = Integer.parseInt(splitTrans[5]);
 			}
+			
+			if (splitTrans[1].equals(GAME_MOVE)) {
+				// get the username 
+				String userName = splitTrans[2]; 
+				// Position as a string 
+				String tempPos = splitTrans[3];
+				// getting the position of the button in the ArrayList
+				int attackPos = Integer.parseInt(temp) - 1;
+				// Store game id				
+				
+				
+			}
+			
+			
+			
+			
 		}
 		
 		if (trans.startsWith("_N3WUS3R_")) {
@@ -764,18 +787,18 @@ public class GUI extends JFrame implements ActionListener{
 		// o is the object that was clicked 
 		Object o = ae.getSource(); 
 		JButton jb; 
+		String btnText = null;
 		
 		try {
 			jb = (JButton)o; 
+			btnText = jb.getText();
 		} catch (Exception e) {
 			System.out.println("Unable to cast Object to JButton"); 
 		}
-		
-		// Testing 1 2 3 
-		// Testiing 456
+
 		
 		// NOTE: That location will be 1 greater than ArrayList location 
-		sendTransmission(GAME_MOVE, jb.getText(), SCREEN_NAME); 
+		sendTransmission(GAME_MOVE, btnText, SCREEN_NAME); 
 		
 
 	}
