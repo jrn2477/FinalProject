@@ -19,7 +19,7 @@ public class Server {
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
 	private ConcurrentLinkedQueue<ThreadedServer> matchMakingQueue = new ConcurrentLinkedQueue<ThreadedServer>();
-	private final String REGEX = "_h3ll_";//used in server generated transmissions
+	private final String REGEX = "56747474692";//used in server generated transmissions
 	private static final String GAME_PLACEMENT_INDICATOR = "GP"; //indicates that the transmission contains the game ID in which the user has been placed
 	
 	/* 

@@ -16,7 +16,7 @@ public class GUI extends JFrame implements ActionListener{
 	
 	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
 	private static final String YOUR_BOARD = "Your Board"; 
-	private static final String REGEX = "_h3ll_"; 
+	private static final String REGEX = "56747474692"; 
 	private static final String MESSAGE_INDICATOR = "M"; 
 	private static final String ATTACK_INDICATOR = "A";
 	private static final String STATUS_INDICATOR = "S";
@@ -601,6 +601,7 @@ public class GUI extends JFrame implements ActionListener{
 		if (trans.startsWith(REGEX)) {
 			String[] splitTrans = trans.split(REGEX); 
 			
+			
 			if (splitTrans[1].equals(MESSAGE_INDICATOR)) {//changed this to constant value as declared above -Nick
 				// Transmission is a message 
 				processMessage(splitTrans[2], splitTrans[3]);
@@ -616,9 +617,7 @@ public class GUI extends JFrame implements ActionListener{
 				//nevermind, it all has to be static due to the way that 
 				// the thing checks for messages.
 				gameID = Integer.parseInt(splitTrans[5]);
-			}
-			
-			if (splitTrans[1].equals(GAME_MOVE)) {
+			} else if (splitTrans[1].equals(GAME_MOVE)) {
 				// get the username 
 				String userName = splitTrans[2]; 
 				// Position as a string 
