@@ -23,8 +23,8 @@ public class GUI extends JFrame implements ActionListener{
 	private static final String GAME_PLACEMENT_INDICATOR = "GP";
 	private static final String GAME_MOVE = "GM"; 
 	private static final String GAME_RESPONSE  = "GR"; 
-	private static int GAME_ID; // Null until placed into game. 
-	
+	private static int gameID;//will indicate which game the user is in
+
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private ArrayList<JButton> board1 = new ArrayList<JButton>(); 
 	private ArrayList<JButton> board2 = new ArrayList<JButton>(); 
@@ -39,7 +39,6 @@ public class GUI extends JFrame implements ActionListener{
 	private static boolean connected;
 	private static Vector<ChatReader> chatReaders = new Vector<ChatReader>();
 	public static ArrayList<String> connectedUserList = new ArrayList<String>();
-	private static int gameID;//will indicate which game the user is in
 	
 	private int[] shipLocations;
 	
@@ -617,7 +616,7 @@ public class GUI extends JFrame implements ActionListener{
 				
 				//nevermind, it all has to be static due to the way that 
 				// the thing checks for messages.
-				GAME_ID = Integer.parseInt(splitTrans[5]);
+				gameID = Integer.parseInt(splitTrans[5]);
 			}
 			
 			if (splitTrans[1].equals(GAME_MOVE)) {
@@ -632,9 +631,9 @@ public class GUI extends JFrame implements ActionListener{
 				// TODO: 
 				// --------------------
 				// Take the game. 
-				// Validate the move 
-				// Send a response 
-				// Update the list of locations 
+				// Validate the move, based upon board. 
+				// Send a response (with GAME_ID)  
+				// Update the list of locations (remove shot ship) 
 				// Update number moves 
 				
 			}
