@@ -629,6 +629,13 @@ public class GUI extends JFrame implements ActionListener{
 				int attackPos = Integer.parseInt(temp) - 1;
 				// Store game id				
 				
+				// TODO: 
+				// --------------------
+				// Take the game. 
+				// Validate the move 
+				// Send a response 
+				// Update the list of locations 
+				// Update number moves 
 				
 			}
 			
