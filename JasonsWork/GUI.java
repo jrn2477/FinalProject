@@ -164,6 +164,10 @@ public class GUI extends JFrame implements ActionListener{
 		//place ships action listener
 		placeshipsBtn.addActionListener(new ActionListener (){
 			public void actionPerformed(ActionEvent ae){
+				for (JButton b: board2) {
+					b.setEnabled(true);
+				}
+				
 				System.out.println("you pressed that button");
 				boolean validShips = true;
 				
@@ -535,7 +539,7 @@ public class GUI extends JFrame implements ActionListener{
 			aryLst.get(i-1).setPreferredSize(new Dimension(35,35)); 
 			aryLst.get(i-1).setBorder(LineBorder.createBlackLineBorder());
 			// REMOVED -- aryLst.get(i-1).add(new JLabel(Integer.toString(i))); -- 
-			
+			aryLst.get(i-1).addActionListener(this);
 			board.add(aryLst.get(i-1)); 
 		}
 		return board; 
@@ -672,11 +676,11 @@ public class GUI extends JFrame implements ActionListener{
 				// the thing checks for messages.
 				try { 
 				    // OLD >> gameID = Integer.parseInt(splitTrans[5]); // 
-				    MY_IP = Integer.parseInt(splitTrans[5]); 
+				    MY_IP = splitTrans[5].toString(); 
 				    
 				} catch (Exception e) {
 				    // OLD >> gameID = Integer.parseInt(splitTrans[2]); // 
-				    MY_IP = Integer.parseInt(splitTrans[2]); 
+					MY_IP = splitTrans[2].toString(); 
 				}
 			}
 			
