@@ -57,8 +57,13 @@ public class Server {
 				matchMakingQueue.add(ths);
 				if(matchMakingQueue.size()> 1){
 					matchCount++;
-					matchMakingQueue.poll().setGameID(matchCount);
-					matchMakingQueue.poll().setGameID(matchCount);
+					System.out.println("MatchMakingQueue Block, Size : "+matchMakingQueue.size());
+					ThreadedServer p1 = matchMakingQueue.poll();
+					ThreadedServer p2 = matchMakingQueue.poll();
+					
+					// Set game id for both clients
+					p1.setGameID(matchCount,p1,p2);
+					p2.setGameID(matchCount,p1,p2);
 				}
 			}
 		} catch (Exception e) {
@@ -88,6 +93,7 @@ public class Server {
 		*/ 
 		public ThreadedServer(Socket s){
 			cs = s; 
+            System.out.println("Threaded Server Created");		
 		}
 		
 		/* 
@@ -164,8 +170,18 @@ public class Server {
 		** @param gameNum the new game ID number to be sent to the client.
 		** @return void
 		*/
-		public void setGameID(int gameNum){
-			sendTransmission(REGEX+GAME_PLACEMENT_INDICATOR+REGEX+gameNum);
+		public void setGameID(int gameNum, ThreadedServer player1, ThreadedServer player2){
+	
+			String p1fullIP = player1.cs.getInetAddress().toString(); 
+			int p1index = p1fullIP.indexOf("/");
+			String p1trimedIP = p1fullIP.substring(p1index + 1);
+			
+			String p2fullIP = player2.cs.getInetAddress().toString(); 
+			int p2index = p2fullIP.indexOf("/");
+			String p2trimedIP = p2fullIP.substring(p2index + 1);
+			
+			sendTransmission(REGEX+GAME_PLACEMENT_INDICATOR+REGEX+p1trimedIP+REGEX+p2trimedIP+REGEX+gameNum);
+			//sendTransmission(REGEX+"M"+"Server"+"You were placed in game")
 			//sends a transmission to user indicating the game in which the have been placed
 			//client-side: see processTransmission().
 			//this might not work, I didnt test it.
