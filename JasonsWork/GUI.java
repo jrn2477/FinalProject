@@ -14,7 +14,7 @@ import java.io.*;
 */ 
 public class GUI extends JFrame implements ActionListener{
 	
-	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
+	private static String IP_ADDRESS, PORT, SCREEN_NAME, MY_IP; 
 	private static final String YOUR_BOARD = "Your Board"; 
 	private static final String REGEX = "_h3ll_"; 
 	private static final String MESSAGE_INDICATOR = "M"; 
@@ -47,6 +47,21 @@ public class GUI extends JFrame implements ActionListener{
 		@version: 11/20/16 
 	*/ 
 	public GUI(){
+		// Get IP Address: 
+		try {
+			String fullIP = InetAddress.getLocalHost().toString(); 
+			int index = fullIP.indexOf("/");
+			String trimedIP = fullIP.substring(index + 1);
+			MY_IP = trimedIP;
+			System.out.println("IP Address: " + trimedIP); 
+		} catch (Exception e) {
+			System.out.println("Failed to pull IP address"); 
+			e.getMessage();
+			e.printStackTrace();
+		}
+		
+		
+		
 		//Listener listen = new Listener(); 
 		setTitle("Let's Play Battleship"); 
 		setLocationRelativeTo(null);
@@ -448,6 +463,9 @@ public class GUI extends JFrame implements ActionListener{
 		try {
 			// Create connection
 			socket = new Socket(IP_ADDRESS,Integer.parseInt(PORT)); 
+			InetAddress add = socket.getInetAddress(); 
+			System.out.println(add.toString());
+			System.out.println(IP_ADDRESS);
 			System.out.println("Connect to Server at: " + IP_ADDRESS);		
 			
 			// Pass the username to server
@@ -650,7 +668,17 @@ public class GUI extends JFrame implements ActionListener{
 				// Transmission is a message 
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
-			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){//-Nick
+			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){
+				System.out.println("wargalbler");
+				System.out.println("my ip: "+MY_IP);
+				System.out.println(splitTrans[2]);
+				System.out.println(splitTrans[3]);
+			    if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){
+			        gameID = Integer.parseInt(splitTrans[4]);
+					System.out.println("jamamajamama");
+			        System.out.println("we have been placed into game" + gameID);
+			    }
+			    //-Nick
 				//gameID = Integer.parseInt(splitTrans[2]); //this SHOULD contain the new game ID
 				//TODO make sure that it still works when gameID is static, 
 				// which I had to do to make this method compile.
