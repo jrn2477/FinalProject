@@ -540,6 +540,7 @@ public class GUI extends JFrame implements ActionListener{
 			aryLst.get(i-1).setBorder(LineBorder.createBlackLineBorder());
 			// REMOVED -- aryLst.get(i-1).add(new JLabel(Integer.toString(i))); -- 
 			aryLst.get(i-1).addActionListener(this);
+			aryLst.get(i-1).setEnabled(false); // DEFAULT TO DISABLED 
 			board.add(aryLst.get(i-1)); 
 		}
 		return board; 
@@ -843,11 +844,10 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	
 	/*
-		Method to process game move 
+		Method to process game response to a move 
 	*/ 
-	public boolean processGameMove(int target){
-		return false;
-		//replacing this with ArrayList.remove(target);
+	public void processGameResponse(int target){
+		
 	}
 	
 	/*
