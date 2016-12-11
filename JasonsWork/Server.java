@@ -19,7 +19,7 @@ public class Server {
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
 	private ConcurrentLinkedQueue<ThreadedServer> matchMakingQueue = new ConcurrentLinkedQueue<ThreadedServer>();
-	private final String REGEX = "56747474692";//used in server generated transmissions
+	private final String REGEX = "_h3ll_";//used in server generated transmissions
 	private static final String GAME_PLACEMENT_INDICATOR = "GP"; //indicates that the transmission contains the game ID in which the user has been placed
 	
 	/* 
@@ -118,12 +118,16 @@ public class Server {
 					// add user to arraylist
 					connectedUsers.add(screenName);
 					// send list out to clients 
-					announceUsers();
+					String outmsg = announceUsers();
+					for (ThreadedServer ths : connectedClients) {
+						((ThreadedServer)ths).sendTransmission(outmsg);
+					}
 				} else {
 					
 					// Send the transmission verbatem to all connected clients
 					for (ThreadedServer ths : connectedClients) {
 						((ThreadedServer)ths).sendTransmission(transmission);
+						((ThreadedServer)ths).sendTransmission(announceUsers());
 					}
 				}
 			} catch (Exception e) {
@@ -168,22 +172,22 @@ public class Server {
 			//TODO test this.
 		}
 		
-		public void announceUsers() {
+		public String announceUsers() {
 			PrintWriter pw; 
+			String out = null;
 			try {
 				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
 				// format string to send 
-				String out = "_N3WUS3R_"; 
+				out = "_N3WUS3R_"; 
 				for (String user: connectedUsers) {
 					out += user + "88888"; 
 				}
-				pw.println(out); 
-				pw.flush();
 			} catch (Exception e) {
 				System.out.println("Error sending username to clients"); 
 				e.getMessage();
 				e.printStackTrace();
 			}
+			return out; 
 		}
 		
 	}

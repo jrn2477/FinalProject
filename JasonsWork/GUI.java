@@ -16,7 +16,7 @@ public class GUI extends JFrame implements ActionListener{
 	
 	private static String IP_ADDRESS, PORT, SCREEN_NAME; 
 	private static final String YOUR_BOARD = "Your Board"; 
-	private static final String REGEX = "56747474692"; 
+	private static final String REGEX = "_h3ll_"; 
 	private static final String MESSAGE_INDICATOR = "M"; 
 	private static final String ATTACK_INDICATOR = "A";
 	private static final String STATUS_INDICATOR = "S";
@@ -146,6 +146,7 @@ public class GUI extends JFrame implements ActionListener{
 		placeshipsBtn = new JButton("Place Ships!");
 		placeshipsBtn.setHorizontalAlignment(JButton.CENTER); 	
 		//placeshipsBtn.setEnabled(false);
+		//place ships action listener
 		placeshipsBtn.addActionListener(new ActionListener (){
 			public void actionPerformed(ActionEvent ae){
 				System.out.println("you pressed that button");
@@ -164,15 +165,49 @@ public class GUI extends JFrame implements ActionListener{
 				int s3Bow = -1; 
 				int s3Mid = -1; 
 				int s3Stern = -1; 
-				
-				// Check ship 1 positioning 
+                
+				try{
+				    s1Bow = Integer.parseInt(ship1bow.getText());
+				    s1Mid = Integer.parseInt(ship1mid.getText());
+				    s1Stern = Integer.parseInt(ship1stern.getText());
+				    
+				    s2Bow = Integer.parseInt(ship2bow.getText());
+				    s2Mid = Integer.parseInt(ship2mid.getText());
+				    s2Stern = Integer.parseInt(ship2stern.getText());
+				    
+				    s3Bow = Integer.parseInt(ship3bow.getText());
+				    s3Mid = Integer.parseInt(ship3mid.getText());
+				    s3Stern = Integer.parseInt(ship3stern.getText());
+				    
+				    if(checkValidLocation(s1Bow, s1Mid, s1Stern)
+					&&checkValidLocation(s2Bow, s2Mid, s2Stern)
+					&&checkValidLocation(s3Bow, s3Mid, s3Stern)){
+                        addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+                        addSimultaneousShip(s3Bow, s3Mid, s3Stern);
+                    }
+                    else{
+                        createErrorMessage("Ship Placement Error: placements must be between 1 and 63, and must be in a horizontal or vertical line");
+                    }
+				}catch(Exception e){
+				    createErrorMessage("Ship Placement Error: All values must be supplied, all must be numeric");
+				}
+				// Check ship 1 positioning
+				/*
 				try {
-					s1Bow = Integer.parseInt(ship1bow.getText());
+					
+					try {
+					    s1Bow = Integer.parseInt(ship1bow.getText());
+					    if  (s1Bow < 1) {
+					        createErrorMessage("Invalid Position for ship 1")
+					    }
+					} catch (Exception e) {
+					    createErrorMessage("No input for ship 1");
+				}
+					}
 					s1Mid = Integer.parseInt(ship1mid.getText());
 					s1Stern = Integer.parseInt(ship1stern.getText());
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 1",
-						 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
+					createErrorMessage("No input for ship 1");
 				}
 				
 				// Check ship 2 positioning 
@@ -181,8 +216,7 @@ public class GUI extends JFrame implements ActionListener{
 					s2Mid = Integer.parseInt(ship2mid.getText());
 					s2Stern = Integer.parseInt(ship2stern.getText());
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 2", 
-						"Ship Placement Error", JOptionPane.ERROR_MESSAGE);
+					createErrorMessage("No input for ship 2");
 				}
 				
 				// Check ship 3 positioning 
@@ -191,10 +225,9 @@ public class GUI extends JFrame implements ActionListener{
 					s1Mid = Integer.parseInt(ship1mid.getText());
 					s1Stern = Integer.parseInt(ship1stern.getText());
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Invalid Input for Ship 3", 
-						"Ship Placement", JOptionPane.ERROR_MESSAGE);
+					createErrorMessage("No input for ship 3");
 				}
-				
+				*/
 				
 				//TODO catch exceptions thrown by somebody putting in a non numeric value here. 
 				// and trying to Integer.parseInt().
@@ -384,8 +417,8 @@ public class GUI extends JFrame implements ActionListener{
 			public void actionPerformed(ActionEvent ae){
 				// Compose transmission 
 				String transmission = ("M" + messageTextField.getText() + userNameTextField.getText());
-				sendTransmission("M",messageTextField.getText(), userNameTextField.getText());	
-				// writeConsole(transmission);
+				sendTransmission("M",messageTextField.getText(), userNameTextField.getText());
+				messageTextField.setText(null);
 			}
 		});
 		
@@ -464,10 +497,10 @@ public class GUI extends JFrame implements ActionListener{
 		}
 	}
 	
-	public void writeConsole(String s){
-		System.out.println(s);
+	public void createErrorMessage(String s) {
+	    JOptionPane.showMessageDialog(null, s,
+					 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
 	}
-	
 	
 	/*
 		@author: Jason Norhdeim 
@@ -575,7 +608,7 @@ public class GUI extends JFrame implements ActionListener{
 				BufferedReader br = new BufferedReader(
 					new InputStreamReader(socket.getInputStream()));
 				String transmission = br.readLine(); 
-				System.out.println(transmission);
+				System.out.println("transmission recieved: "+ transmission);
 				
 				//  ADD CODE FOR TRANSMISSION PROCESSING 
 				processTransmission(transmission);
@@ -595,12 +628,23 @@ public class GUI extends JFrame implements ActionListener{
 		@param: trans - the transmission recieved from the server 
 		@version: 12/5/16
 	*/ 
-	//Why is this static? -Nick
 	public static void processTransmission(String trans) {
+		if (trans.startsWith("_N3WUS3R_")) {
+			// get username 
+			connectedUserList.clear();
+			System.out.println("inside N3WUS3R block");
+			int startPos = ("_N3WUS3R_").length();
+			String nameList = trans.substring(startPos); 
+			System.out.println("Name List: " + nameList); 
+			String[] tempList = nameList.split("88888");
+			for (int i = 0; i < tempList.length; i++) {
+				connectedUserList.add(tempList[i]);
+			}
+			updateUserList();
+		}
 		
-		if (trans.startsWith(REGEX)) {
+		else if (trans.startsWith(REGEX)) {
 			String[] splitTrans = trans.split(REGEX); 
-			
 			
 			if (splitTrans[1].equals(MESSAGE_INDICATOR)) {//changed this to constant value as declared above -Nick
 				// Transmission is a message 
@@ -616,8 +660,14 @@ public class GUI extends JFrame implements ActionListener{
 				
 				//nevermind, it all has to be static due to the way that 
 				// the thing checks for messages.
-				gameID = Integer.parseInt(splitTrans[5]);
-			} else if (splitTrans[1].equals(GAME_MOVE)) {
+				try { 
+				    gameID = Integer.parseInt(splitTrans[5]);
+				} catch (Exception e) {
+				    gameID = Integer.parseInt(splitTrans[2]);
+				}
+			}
+			
+			if (splitTrans[1].equals(GAME_MOVE)) {
 				// get the username 
 				String userName = splitTrans[2]; 
 				// Position as a string 
@@ -632,24 +682,13 @@ public class GUI extends JFrame implements ActionListener{
 				    // send the new transmission,
 				    // return as hit/miss (boolean)
 				    if(shipLocations.remove(attackPos)){
-				        
 				        // sendTransmission (TransmissionType, userName, Content)
-				        
 				        sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'h'); // h = hit
 				    } // remove the attacked location from t
 				    else{
 				        sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'m'); // m = miss 
 				    }
 				}
-				// TODO: 
-				// --------------------
-				// Take the game. 
-				// Validate the move, based upon board. 
-				// Send a response (with GAME_ID)  
-				// Update the list of locations (remove shot ship) 
-				// Update number moves 
-				
-				
 				if (splitTrans[1].equals(GAME_RESPONSE)) {
 				    // Pos 2 = Username
 				    // Pos 3 = Content + hit/miss (h = hit; m = miss)
@@ -657,14 +696,12 @@ public class GUI extends JFrame implements ActionListener{
 				    
 				    int length = splitTrans[4].length(); 
 				    String temp = splitTrans[4].substring(0,(length-1));
-				    
 				    /*
 				        buttons.get(indexInArrayList).setBackground(Color.red);
                         buttons.get(indexInArrayList).setOpaque(true);
                         buttons.get(indexInArrayList).setBorderPainted(false);
                         buttons.get(indexInArrayList).setEnabled(false);
 				    */
-				    
 				    int pos = Integer.parseInt(temp); 
 				    
 				    if (splitTrans[4].equals(gameID)) {
@@ -685,27 +722,7 @@ public class GUI extends JFrame implements ActionListener{
 				        }
 				    }
 				}
-				
 			}
-			
-			
-			
-			
-		}
-		
-		if (trans.startsWith("_N3WUS3R_")) {
-			// get username 
-			int startPos = ("_N3WUS3R_").length();
-			String nameList = trans.substring(startPos); 
-			
-			System.out.println("Name List: " + nameList); 
-			
-			String[] tempList = nameList.split("88888");
-			
-			for (int i = 0; i < tempList.length; i++) {
-				connectedUserList.add(tempList[i]);
-			}
-			updateUserList();
 		}
 	}
 
@@ -833,6 +850,8 @@ public class GUI extends JFrame implements ActionListener{
 	*/ 
 	public static void updateUserList(){
 		// clear the user list box 
+		//userList.setText(null);//this is a JTextARea
+		System.out.println("updating user list");
 		userList.setText(null);
 		// iterate through the list of connected user 
 		// and add them to the JTextarea
