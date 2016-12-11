@@ -544,25 +544,7 @@ public class GUI extends JFrame implements ActionListener{
 	public static void appendChat(String s) {
 		chatTextArea.append(s + "\n"); 
 	}
-	
-	
-//	public class Listener implements ActionListener {
-//		
-//		public Listener(){
-//			
-//		}
-//		
-//		public void actionPerformed(ActionEvent ae) {
-//			Object o = ae.getSource(); 
-//			
-//			// If it is a hit 
-//			JPanel p = o; 
-//			p.setBackground(Color.RED); 
-//		}
-//	}
 
-	
-	
 	
 	/*
 		Inner Class that creates a thread to constantly read in transmissions 
@@ -669,13 +651,13 @@ public class GUI extends JFrame implements ActionListener{
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
 			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){
-				System.out.println("wargalbler");
-				System.out.println("my ip: "+MY_IP);
-				System.out.println(splitTrans[2]);
-				System.out.println(splitTrans[3]);
-			    if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){
+				System.out.println("In Game Placement Loop");
+				System.out.println("My IP Address: "+MY_IP);
+				System.out.println(splitTrans[2]); // check p1 IP 
+				System.out.println(splitTrans[3]); // check p2 IP (could be vice-versa )
+			    if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){ // if either p1 or p2 
 			        gameID = Integer.parseInt(splitTrans[4]);
-					System.out.println("jamamajamama");
+					System.out.println("Inside GPI loop - > Parsing IP address");
 			        System.out.println("we have been placed into game" + gameID);
 			    }
 			    //-Nick
@@ -689,9 +671,12 @@ public class GUI extends JFrame implements ActionListener{
 				//nevermind, it all has to be static due to the way that 
 				// the thing checks for messages.
 				try { 
-				    gameID = Integer.parseInt(splitTrans[5]);
+				    // OLD >> gameID = Integer.parseInt(splitTrans[5]); // 
+				    MY_IP = Integer.parseInt(splitTrans[5]); 
+				    
 				} catch (Exception e) {
-				    gameID = Integer.parseInt(splitTrans[2]);
+				    // OLD >> gameID = Integer.parseInt(splitTrans[2]); // 
+				    MY_IP = Integer.parseInt(splitTrans[2]); 
 				}
 			}
 			
