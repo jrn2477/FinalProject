@@ -14,7 +14,7 @@ public class Server {
 	
 	private static int PORT = 6760;
 	// the connections of clients 
-	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>(); 	
+	private static Vector<ThreadedServer> connectedClients = new Vector<ThreadedServer>();     
 	// names of the people who are connected
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
@@ -93,7 +93,7 @@ public class Server {
 		*/ 
 		public ThreadedServer(Socket s){
 			cs = s; 
-            System.out.println("Threaded Server Created");		
+			System.out.println("Threaded Server Created");        
 		}
 		
 		/* 
@@ -132,6 +132,8 @@ public class Server {
 					
 					// Send the transmission verbatem to all connected clients
 					for (ThreadedServer ths : connectedClients) {
+						System.out.println("Sending: "+ transmission);
+						System.out.println("To: "+ ths.screenName);
 						((ThreadedServer)ths).sendTransmission(transmission);
 						((ThreadedServer)ths).sendTransmission(announceUsers());
 					}
@@ -196,7 +198,7 @@ public class Server {
 				// format string to send 
 				out = "_N3WUS3R_"; 
 				for (String user: connectedUsers) {
-					out += user + "88888"; 
+					out += user + "_E50328A_"; 
 				}
 			} catch (Exception e) {
 				System.out.println("Error sending username to clients"); 

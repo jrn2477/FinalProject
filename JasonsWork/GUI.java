@@ -33,7 +33,7 @@ public class GUI extends JFrame implements ActionListener{
 	private static JTextArea chatTextArea, userList; 
 	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField; 
 	private JButton sendMessageBtn, connectBtn, placeshipsBtn; 
- 	private static Socket socket;
+	 private static Socket socket;
 	private static BufferedReader br; 
 	private static PrintWriter pw; 
 	private static boolean connected;
@@ -147,7 +147,7 @@ public class GUI extends JFrame implements ActionListener{
 		JTextField ship2mid = new JTextField(2);
 		//ship2mid.setEditable(false); 
 		JTextField ship3mid = new JTextField(2);
-		//ship3mid.setEditable(false);	
+		//ship3mid.setEditable(false);    
 		
 		// ship 3 textfields 
 		JTextField ship1stern = new JTextField(2);
@@ -155,11 +155,11 @@ public class GUI extends JFrame implements ActionListener{
 		JTextField ship2stern = new JTextField(2);
 		//ship2stern.setEditable(false); 
 		JTextField ship3stern = new JTextField(2);
-		//ship3stern.setEditable(false);	//TODO uncomment these when out of development
+		//ship3stern.setEditable(false);    //TODO uncomment these when out of development
 		
 		// place ships button
 		placeshipsBtn = new JButton("Place Ships!");
-		placeshipsBtn.setHorizontalAlignment(JButton.CENTER); 	
+		placeshipsBtn.setHorizontalAlignment(JButton.CENTER);     
 		//placeshipsBtn.setEnabled(false);
 		//place ships action listener
 		placeshipsBtn.addActionListener(new ActionListener (){
@@ -174,7 +174,7 @@ public class GUI extends JFrame implements ActionListener{
 				// default ship position to impossible position 
 				// of negative 1 
 				int s1Bow = -1; 
-				int s1Mid = -1; 				
+				int s1Mid = -1;                 
 				int s1Stern = -1; 
 				
 				int s2Bow = -1;
@@ -184,43 +184,43 @@ public class GUI extends JFrame implements ActionListener{
 				int s3Bow = -1; 
 				int s3Mid = -1; 
 				int s3Stern = -1; 
-                
+				
 				try{
-				    s1Bow = Integer.parseInt(ship1bow.getText());
-				    s1Mid = Integer.parseInt(ship1mid.getText());
-				    s1Stern = Integer.parseInt(ship1stern.getText());
-				    
-				    s2Bow = Integer.parseInt(ship2bow.getText());
-				    s2Mid = Integer.parseInt(ship2mid.getText());
-				    s2Stern = Integer.parseInt(ship2stern.getText());
-				    
-				    s3Bow = Integer.parseInt(ship3bow.getText());
-				    s3Mid = Integer.parseInt(ship3mid.getText());
-				    s3Stern = Integer.parseInt(ship3stern.getText());
-				    
-				    if(checkValidLocation(s1Bow, s1Mid, s1Stern)
+					s1Bow = Integer.parseInt(ship1bow.getText());
+					s1Mid = Integer.parseInt(ship1mid.getText());
+					s1Stern = Integer.parseInt(ship1stern.getText());
+					
+					s2Bow = Integer.parseInt(ship2bow.getText());
+					s2Mid = Integer.parseInt(ship2mid.getText());
+					s2Stern = Integer.parseInt(ship2stern.getText());
+					
+					s3Bow = Integer.parseInt(ship3bow.getText());
+					s3Mid = Integer.parseInt(ship3mid.getText());
+					s3Stern = Integer.parseInt(ship3stern.getText());
+					
+					if(checkValidLocation(s1Bow, s1Mid, s1Stern)
 					&&checkValidLocation(s2Bow, s2Mid, s2Stern)
 					&&checkValidLocation(s3Bow, s3Mid, s3Stern)){
-                        addSimultaneousShip(s1Bow, s1Mid, s1Stern);
-                        addSimultaneousShip(s3Bow, s3Mid, s3Stern);
-                    }
-                    else{
-                        createErrorMessage("Ship Placement Error: placements must be between 1 and 63, and must be in a horizontal or vertical line");
-                    }
+						addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+						addSimultaneousShip(s3Bow, s3Mid, s3Stern);
+					}
+					else{
+						createErrorMessage("Ship Placement Error: placements must be between 1 and 63, and must be in a horizontal or vertical line");
+					}
 				}catch(Exception e){
-				    createErrorMessage("Ship Placement Error: All values must be supplied, all must be numeric");
+					createErrorMessage("Ship Placement Error: All values must be supplied, all must be numeric");
 				}
 				// Check ship 1 positioning
 				/*
 				try {
 					
 					try {
-					    s1Bow = Integer.parseInt(ship1bow.getText());
-					    if  (s1Bow < 1) {
-					        createErrorMessage("Invalid Position for ship 1")
-					    }
+						s1Bow = Integer.parseInt(ship1bow.getText());
+						if  (s1Bow < 1) {
+							createErrorMessage("Invalid Position for ship 1")
+						}
 					} catch (Exception e) {
-					    createErrorMessage("No input for ship 1");
+						createErrorMessage("No input for ship 1");
 				}
 					}
 					s1Mid = Integer.parseInt(ship1mid.getText());
@@ -359,7 +359,7 @@ public class GUI extends JFrame implements ActionListener{
 				System.out.println("IP Address: " + tempIP
 					+ "\n" + "Port: " + tempPort
 					+ "\n" + "Screen Name: " + tempSN);
-				*/ 				
+				*/                 
 				
 				
 				if (tempIP.equals("")) {
@@ -470,7 +470,7 @@ public class GUI extends JFrame implements ActionListener{
 			InetAddress add = socket.getInetAddress(); 
 			System.out.println(add.toString());
 			System.out.println(IP_ADDRESS);
-			System.out.println("Connect to Server at: " + IP_ADDRESS);		
+			System.out.println("Connect to Server at: " + IP_ADDRESS);        
 			
 			// Pass the username to server
 			try {
@@ -520,7 +520,7 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	
 	public void createErrorMessage(String s) {
-	    JOptionPane.showMessageDialog(null, s,
+		JOptionPane.showMessageDialog(null, s,
 					 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
 	}
 	
@@ -591,7 +591,7 @@ public class GUI extends JFrame implements ActionListener{
 			while (connected) {
 				pullFromServer();
 				System.out.println(i); 
-				try	{
+				try    {
 					this.sleep(100);
 				} catch (Exception e) {
 					e.getMessage();
@@ -621,7 +621,7 @@ public class GUI extends JFrame implements ActionListener{
 				} catch (Exception e) {
 				e.getMessage(); 
 				e.printStackTrace();
-			}	
+			}    
 		}
 		
 	}//end ChatReader 
@@ -637,11 +637,11 @@ public class GUI extends JFrame implements ActionListener{
 		if (trans.startsWith("_N3WUS3R_")) {
 			// get username 
 			connectedUserList.clear();
-			System.out.println("inside N3WUS3R block");
+			//System.out.println("inside N3WUS3R block");
 			int startPos = ("_N3WUS3R_").length();
 			String nameList = trans.substring(startPos); 
-			System.out.println("Name List: " + nameList); 
-			String[] tempList = nameList.split("88888");
+			//System.out.println("Name List: " + nameList); 
+			String[] tempList = nameList.split("_E50328A_");
 			for (int i = 0; i < tempList.length; i++) {
 				connectedUserList.add(tempList[i]);
 			}
@@ -660,12 +660,12 @@ public class GUI extends JFrame implements ActionListener{
 				System.out.println("My IP Address: "+MY_IP);
 				System.out.println(splitTrans[2]); // check p1 IP 
 				System.out.println(splitTrans[3]); // check p2 IP (could be vice-versa )
-			    if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){ // if either p1 or p2 
-			        gameID = Integer.parseInt(splitTrans[4]);
+				if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){ // if either p1 or p2 
+					gameID = Integer.parseInt(splitTrans[4]);
 					System.out.println("Inside GPI loop - > Parsing IP address");
-			        System.out.println("we have been placed into game" + gameID);
-			    }
-			    //-Nick
+					System.out.println("we have been placed into game" + gameID);
+				}
+				//-Nick
 				//gameID = Integer.parseInt(splitTrans[2]); //this SHOULD contain the new game ID
 				//TODO make sure that it still works when gameID is static, 
 				// which I had to do to make this method compile.
@@ -676,16 +676,16 @@ public class GUI extends JFrame implements ActionListener{
 				//nevermind, it all has to be static due to the way that 
 				// the thing checks for messages.
 				try { 
-				    // OLD >> gameID = Integer.parseInt(splitTrans[5]); // 
-				    MY_IP = splitTrans[5].toString(); 
-				    
+					// OLD >> gameID = Integer.parseInt(splitTrans[5]); // 
+					MY_IP = splitTrans[5].toString(); 
+					
 				} catch (Exception e) {
-				    // OLD >> gameID = Integer.parseInt(splitTrans[2]); // 
+					// OLD >> gameID = Integer.parseInt(splitTrans[2]); // 
 					MY_IP = splitTrans[2].toString(); 
 				}
 			}
 			
-			if (splitTrans[1].equals(GAME_MOVE)) {
+			if (splitTrans[1].equals(GAME_MOVE) && !splitTrans[2].equals(SCREEN_NAME)) {
 				// get the username 
 				String userName = splitTrans[2]; 
 				// Position as a string 
@@ -694,51 +694,63 @@ public class GUI extends JFrame implements ActionListener{
 				String game = splitTrans[4];
 				// getting the position of the button in the ArrayList
 				Integer attackPos = Integer.parseInt(tempPos) - 1;
-				// Store game id			
+				// Store game id            
 				if(gameID == Integer.parseInt(game)){
-				    // validate the move 
-				    // send the new transmission,
-				    // return as hit/miss (boolean)
-				    if(shipLocations.remove(attackPos)){
-				        // sendTransmission (TransmissionType, userName, Content)
-				        sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'h'); // h = hit
-				    } // remove the attacked location from t
-				    else{
-				        sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'m'); // m = miss 
-				    }
+					// validate the move 
+					// send the new transmission,
+					// return as hit/miss (boolean)
+					System.out.println("processTransmission.Game_Move"); // CHECK 
+					if(shipLocations.remove(attackPos)){
+						// sendTransmission (TransmissionType, userName, Content)
+						sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'h'); // h = hit
+						System.out.println("Sending hit indicator"); // CHECK 
+					} // remove the attacked location from t
+					else{
+						sendTransmission(GAME_RESPONSE, SCREEN_NAME, tempPos+'m'); // m = miss 
+						System.out.println("Sending miss indicator"); // CHECK  
+					}
 				}
-				if (splitTrans[1].equals(GAME_RESPONSE)) {
-				    // Pos 2 = Username
-				    // Pos 3 = Content + hit/miss (h = hit; m = miss)
-				    // Pos 4 = GAME_ID 
-				    
-				    int length = splitTrans[4].length(); 
-				    String temp = splitTrans[4].substring(0,(length-1));
-				    /*
-				        buttons.get(indexInArrayList).setBackground(Color.red);
-                        buttons.get(indexInArrayList).setOpaque(true);
-                        buttons.get(indexInArrayList).setBorderPainted(false);
-                        buttons.get(indexInArrayList).setEnabled(false);
-				    */
-				    int pos = Integer.parseInt(temp); 
-				    
-				    if (splitTrans[4].equals(gameID)) {
-				        // Change colors 
-				        // go through the arraylist, get the position (plus 1), 
-				        // and change the color to blue (if a miss) or red (if a hit)
-				        if(splitTrans[3].charAt((splitTrans[3].length()-1)) == ('h')) {
-				            //change color to red
-				            board2.get(pos).setBackground(Color.RED);
-				            board2.get(pos).setOpaque(true);
-				            board2.get(pos).setEnabled(false);
-				            
-				        } else { // it was a miss 
-				            // change color to blue 
-				            board2.get(pos).setBackground(Color.BLUE);
-				            board2.get(pos).setOpaque(true); 
-				            board2.get(pos).setEnabled(false);
-				        }
-				    }
+			}
+			if (splitTrans[1].equals(GAME_RESPONSE) && !splitTrans[3].equals(SCREEN_NAME)) {
+				// Pos 2 = Username
+				// Pos 3 = Content + hit/miss (h = hit; m = miss)
+				// Pos 4 = GAME_ID 
+				System.out.println("Game Response Detected");
+				int length = splitTrans[2].length(); 
+				String temp = splitTrans[2].substring(0,(length-1));
+				System.out.println("SplitTrans[4] == "+splitTrans[2]);
+				System.out.println("String 'temp' == "+ temp);
+				
+				/*
+					buttons.get(indexInArrayList).setBackground(Color.red);
+					buttons.get(indexInArrayList).setOpaque(true);
+					buttons.get(indexInArrayList).setBorderPainted(false);
+					buttons.get(indexInArrayList).setEnabled(false);
+				*/
+				int pos = Integer.parseInt(temp); 
+				
+				if (splitTrans[4].equals(gameID)) {
+					System.out.println("I want a puppy");
+					System.out.println("ProcessTransmission.gameMove.thisGameID");
+					// Change colors 
+					// go through the arraylist, get the position (plus 1), 
+					// and change the color to blue (if a miss) or red (if a hit)
+					if(splitTrans[3].charAt((splitTrans[3].length()-1)) == ('h')) {
+						//change color to red
+						System.out.println("Inside Hit Block");
+						board2.get(pos).setBackground(Color.RED);
+						board2.get(pos).setOpaque(true);
+						board2.get(pos).setEnabled(false);
+						System.out.println("RED RED RED RED"); 
+						
+					} else { // it was a miss 
+						// change color to blue 
+						System.out.println("Inside Miss Block");
+						board2.get(pos).setBackground(Color.BLUE);
+						board2.get(pos).setOpaque(true); 
+						board2.get(pos).setEnabled(false);
+						System.out.println("BLUE BLUE BLUE BLUE");
+					}
 				}
 			}
 		}
@@ -788,7 +800,7 @@ public class GUI extends JFrame implements ActionListener{
 		int bowCol = bow%8;
 		int bowRow = bow/8;
 		
-		if(	(bow < 0 || bow > 63)||
+		if(    (bow < 0 || bow > 63)||
 		(mid < 0 || mid > 63)||
 		(stern < 0 || stern > 63)){
 			goodMove =  false;
@@ -833,7 +845,7 @@ public class GUI extends JFrame implements ActionListener{
 			}
 			else{
 				goodMove = false;
-			}	
+			}    
 		}
 		else{
 			if(goodMove){
@@ -879,12 +891,12 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	
 	/*
-	    ActionListener to be added to each position on the grid. 
-	    
-	    // ToDo: 
-	    - Disable the botton after (idoit-proof)
-	    - Send move 
-	    
+		ActionListener to be added to each position on the grid. 
+		
+		// ToDo: 
+		- Disable the botton after (idoit-proof)
+		- Send move 
+		
 	*/
 	public void actionPerformed(ActionEvent ae) {
 		// o is the object that was clicked 
@@ -903,7 +915,7 @@ public class GUI extends JFrame implements ActionListener{
 		// Sends the buttons text [btnText] (identifying the location to be attacked)
 		// Sends the SCREEN_NAME of the person attacking 
 		sendTransmission(GAME_MOVE, btnText, SCREEN_NAME); 
-	    // NOTE: That location will be 1 greater than ArrayList location 
+		// NOTE: That location will be 1 greater than ArrayList location 
 
 	}
 		
