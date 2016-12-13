@@ -192,6 +192,12 @@ public class Server {
 			//TODO test this.
 		}
 		
+		
+		/*
+			Method to Announce Users 
+			@author: Jason Nordheim 
+			@return: String (the string to be transmitted to the connected clients) 
+		*/ 
 		public String announceUsers() {
 			PrintWriter pw; 
 			String out = null;
@@ -209,7 +215,6 @@ public class Server {
 			}
 			return out; 
 		}
-		
 	}
 	/*
 		Main method to run the application 
