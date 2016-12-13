@@ -253,8 +253,6 @@ public class GUI extends JFrame implements ActionListener{
 		sendMessageBtn = new JButton("Send"); 
 		sendMessageBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				// Compose transmission 
-				String transmission = ("M" + messageTextField.getText() + userNameTextField.getText());
 				sendTransmission("M",messageTextField.getText(), userNameTextField.getText());
 				messageTextField.setText(null);
 			}
