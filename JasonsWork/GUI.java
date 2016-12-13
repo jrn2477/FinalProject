@@ -201,8 +201,6 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	
 	public void setUpChat() {
-		
-		
 		// setup connection Labels 
 		JLabel ipLabel, portLabel, screenNameLabel; 
 		ipLabel = new JLabel("IP Address:"); 
@@ -212,6 +210,7 @@ public class GUI extends JFrame implements ActionListener{
 		// setup textfields for connection
 		ipAddressTextField = new JTextField(36); 
 		portTextField = new JTextField(6);
+		portTextField.setText("6760");
 		userNameTextField = new JTextField(20); 
 		
 		// setup level 1 of connection panel 
@@ -303,13 +302,9 @@ public class GUI extends JFrame implements ActionListener{
 				e.getMessage(); 
 				e.printStackTrace();
 			}
-				
 			ChatReader cr = new ChatReader(socket);
 			cr.start();
-			
-		} catch (Exception e) {
-			
-		}
+		} catch (Exception e) { e.getMessage(); e.printStackTrace(); }
 	}
 	/*
 		Method to send a transmission to the server 
@@ -475,7 +470,7 @@ public class GUI extends JFrame implements ActionListener{
 		else if (trans.startsWith(REGEX)) {
 			String[] splitTrans = trans.split(REGEX); 
 			
-			if (splitTrans[1].equals(MESSAGE_INDICATOR)) {//changed this to constant value as declared above -Nick
+			if (splitTrans[1].equals(MESSAGE_INDICATOR)) {
 				// Transmission is a message 
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
@@ -515,19 +510,14 @@ public class GUI extends JFrame implements ActionListener{
 			}
 			
 			if (splitTrans[1].equals(GAME_MOVE) && !splitTrans[2].equals(SCREEN_NAME)) {
-				// get the username 
-				String userName = splitTrans[2]; 
-				// Position as a string 
-				String tempPos = splitTrans[3];
-				// Get the game ID 
-				String game = splitTrans[4];
+				String userName = splitTrans[2]; // get the username 
+				String tempPos = splitTrans[3]; // Position as a string 
+				String game = splitTrans[4]; // Get the game ID 
 				// getting the position of the button in the ArrayList
 				Integer attackPos = Integer.parseInt(tempPos) - 1;
 				// Store game id            
 				if(gameID == Integer.parseInt(game)){
-					// validate the move 
-					// send the new transmission,
-					// return as hit/miss (boolean)
+					// validate the move, send the new transmission, return as hit/miss (h/m) 
 					System.out.println("processTransmission.Game_Move"); // CHECK 
 					if(shipLocations.remove(attackPos)){
 						// sendTransmission (TransmissionType, userName, Content)
