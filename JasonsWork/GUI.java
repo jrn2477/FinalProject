@@ -32,7 +32,8 @@ public class GUI extends JFrame implements ActionListener{
 	private JPanel myBoardPanel, oppBoardPanel, boardsPanel, gamePanel, gameBoard1, gameBoard2, 
 		chatPanel, shipPositionsPanel, connectionPanel; 
 	private static JTextArea chatTextArea, userList; 
-	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField; 
+	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField,
+		ship1bow, ship1mid, ship1stern, ship2bow, ship2mid, ship2stern, ship3bow, ship3mid, ship3stern; 
 	private JButton sendMessageBtn, connectBtn, placeshipsBtn; 
 	 private static Socket socket;
 	private static BufferedReader br; 
@@ -60,8 +61,6 @@ public class GUI extends JFrame implements ActionListener{
 			e.getMessage();
 			e.printStackTrace();
 		}
-		
-		
 		
 		//Listener listen = new Listener(); 
 		setTitle("Let's Play Battleship"); 
@@ -135,152 +134,35 @@ public class GUI extends JFrame implements ActionListener{
 		// setup the text fields for position entry 
 		// disable fields by default 
 		// Ship 1 Textfields 
-		JTextField ship1bow = new JTextField(2);
-		//ship1bow.setEditable(false); 
-		JTextField ship2bow = new JTextField(2);
-		//ship2bow.setEditable(false);
-		JTextField ship3bow = new JTextField(2);
-		//ship3bow.setEditable(false);
+		ship1bow = new JTextField(2);
+		ship1bow.setEditable(false); 
+		ship2bow = new JTextField(2);
+		ship2bow.setEditable(false);
+		ship3bow = new JTextField(2);
+		ship3bow.setEditable(false);
 		
 		// Ship 2 Textfields 
 		JTextField ship1mid = new JTextField(2);
-		//ship1mid.setEditable(false); 
+		ship1mid.setEditable(false); 
 		JTextField ship2mid = new JTextField(2);
-		//ship2mid.setEditable(false); 
+		ship2mid.setEditable(false); 
 		JTextField ship3mid = new JTextField(2);
-		//ship3mid.setEditable(false);    
+		ship3mid.setEditable(false);    
 		
 		// ship 3 textfields 
-		JTextField ship1stern = new JTextField(2);
-		//ship1stern.setEditable(false); 
-		JTextField ship2stern = new JTextField(2);
-		//ship2stern.setEditable(false); 
-		JTextField ship3stern = new JTextField(2);
-		//ship3stern.setEditable(false);    //TODO uncomment these when out of development
+		ship1stern = new JTextField(2);
+		ship1stern.setEditable(false); 
+		ship2stern = new JTextField(2);
+		ship2stern.setEditable(false); 
+		ship3stern = new JTextField(2);
+		ship3stern.setEditable(false);    //TODO uncomment these when out of development
 		
 		// place ships button
 		placeshipsBtn = new JButton("Place Ships!");
 		placeshipsBtn.setHorizontalAlignment(JButton.CENTER);     
-		//placeshipsBtn.setEnabled(false);
-		//place ships action listener
-		placeshipsBtn.addActionListener(new ActionListener (){
-			public void actionPerformed(ActionEvent ae){
-				for (JButton b: board2) {
-					b.setEnabled(true);
-				}
-				
-				boolean validShips = true;
-				
-				// default ship position to impossible position 
-				// of negative 1 
-				int s1Bow = -1; 
-				int s1Mid = -1;                 
-				int s1Stern = -1; 
-				
-				int s2Bow = -1;
-				int s2Mid = -1;
-				int s2Stern = -1; 
-				
-				int s3Bow = -1; 
-				int s3Mid = -1; 
-				int s3Stern = -1; 
-				
-				try{
-					s1Bow = Integer.parseInt(ship1bow.getText());
-					s1Mid = Integer.parseInt(ship1mid.getText());
-					s1Stern = Integer.parseInt(ship1stern.getText());
-					
-					s2Bow = Integer.parseInt(ship2bow.getText());
-					s2Mid = Integer.parseInt(ship2mid.getText());
-					s2Stern = Integer.parseInt(ship2stern.getText());
-					
-					s3Bow = Integer.parseInt(ship3bow.getText());
-					s3Mid = Integer.parseInt(ship3mid.getText());
-					s3Stern = Integer.parseInt(ship3stern.getText());
-					
-					if(checkValidLocation(s1Bow, s1Mid, s1Stern)
-					&&checkValidLocation(s2Bow, s2Mid, s2Stern)
-					&&checkValidLocation(s3Bow, s3Mid, s3Stern)){
-						addSimultaneousShip(s1Bow, s1Mid, s1Stern);
-						addSimultaneousShip(s3Bow, s3Mid, s3Stern);
-					}
-					else{
-						createErrorMessage("Ship Placement Error: placements must be between 1 and 63, and must be in a horizontal or vertical line");
-					}
-				}catch(Exception e){
-					createErrorMessage("Ship Placement Error: All values must be supplied, all must be numeric");
-				}
-				// Check ship 1 positioning
-				/*
-				try {
-					
-					try {
-						s1Bow = Integer.parseInt(ship1bow.getText());
-						if  (s1Bow < 1) {
-							createErrorMessage("Invalid Position for ship 1")
-						}
-					} catch (Exception e) {
-						createErrorMessage("No input for ship 1");
-				}
-					}
-					s1Mid = Integer.parseInt(ship1mid.getText());
-					s1Stern = Integer.parseInt(ship1stern.getText());
-				} catch (Exception e) {
-					createErrorMessage("No input for ship 1");
-				}
-				
-				// Check ship 2 positioning 
-				try {
-					s2Bow = Integer.parseInt(ship2bow.getText());
-					s2Mid = Integer.parseInt(ship2mid.getText());
-					s2Stern = Integer.parseInt(ship2stern.getText());
-				} catch (Exception e) {
-					createErrorMessage("No input for ship 2");
-				}
-				
-				// Check ship 3 positioning 
-				try {
-					s3Bow = Integer.parseInt(ship3bow.getText());
-					s1Mid = Integer.parseInt(ship1mid.getText());
-					s1Stern = Integer.parseInt(ship1stern.getText());
-				} catch (Exception e) {
-					createErrorMessage("No input for ship 3");
-				}
-				*/
-				
-				//TODO catch exceptions thrown by somebody putting in a non numeric value here. 
-				// and trying to Integer.parseInt().
-				ArrayList<Integer> locs = new ArrayList<Integer>();
-				locs.add(s1Bow);
-				locs.add(s1Mid);
-				locs.add(s1Stern);
-				locs.add(s2Bow);
-				locs.add(s2Mid);
-				locs.add(s2Stern);
-				locs.add(s3Bow);
-				locs.add(s3Mid);
-				locs.add(s3Stern);
-				for (int i = 0; i < 9; i++) {//checks to see if any ships overlap
-					if(locs.indexOf(locs.get(i)) != i){
-						validShips = false;
-						System.out.println("Ships overlap");
-					}
-					if(locs.get(i) > 64 || locs.get(i) < 1){//ensures that all ships are in bounds
-						System.out.println("Ships out of bounds");
-						validShips = false;
-					}
-				}
-				
-				if(validShips && checkValidLocation(s1Bow, s1Mid, s1Stern)
-				&& checkValidLocation(s2Bow, s2Mid, s2Stern)
-				&& checkValidLocation(s3Bow, s3Mid, s3Stern)){
-					addSimultaneousShip(s1Bow, s1Mid, s1Stern);
-					addSimultaneousShip(s2Bow, s2Mid, s2Stern);
-					addSimultaneousShip(s3Bow, s3Mid, s3Stern);
-				}
-			}
-		});
-		
+		placeshipsBtn.setEnabled(false);
+		placeshipsBtn.addActionListener(new PlaceShipsListener()); 
+							
 		shipPositionsPanel = new JPanel(new GridLayout(3,7));
 		
 		// Add ship 1 
@@ -347,69 +229,7 @@ public class GUI extends JFrame implements ActionListener{
 		
 		JPanel level3 = new JPanel(new FlowLayout()); 
 		connectBtn = new JButton("Connect"); 
-		connectBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				// pull in values from text boxes 
-				String tempIP, tempPort, tempSN; 
-				tempIP = ipAddressTextField.getText(); 
-				tempPort = portTextField.getText(); 
-				tempSN = userNameTextField.getText(); 
-				
-				/* FOR TESTING PURPOSES
-				System.out.println("IP Address: " + tempIP
-					+ "\n" + "Port: " + tempPort
-					+ "\n" + "Screen Name: " + tempSN);
-				*/                 
-				
-				
-				if (tempIP.equals("")) {
-					JOptionPane.showMessageDialog(null,
-						 "Please enter an IP Address", 
-						"Error", JOptionPane.ERROR_MESSAGE);
-				} else if (tempPort.equals("")) {
-					JOptionPane.showMessageDialog(null, 
-						" Please enter a Port Number", 
-						"Error", JOptionPane.ERROR_MESSAGE);
-				} else if (tempSN.equals("")) {
-					JOptionPane.showMessageDialog(null, 
-						"Please enter a Screen Name", 
-						"Error", JOptionPane.ERROR_MESSAGE);
-				} else if (tempIP.length() < 5) {
-					JOptionPane.showMessageDialog(null, 
-						"Invalid IP Address Entered\n\nPlease enter a valid IP address", 
-						"Error", JOptionPane.ERROR_MESSAGE);
-				} else if (tempPort.length() < 3) {
-					JOptionPane.showMessageDialog(null, 
-					"Invalid Port Number Entered\n\nPlease enter a valid Port Number", 
-					"Error", JOptionPane.ERROR_MESSAGE);
-				} else if (tempSN.length() < 3) {
-					JOptionPane.showMessageDialog(null, 
-					"Invalid Screen Name entered\n\nPlease enter a screen name that" + 
-					"is greater than 3 characters", 
-					"Error", JOptionPane.ERROR_MESSAGE);
-				} else {
-					// INPUTS ASSUMED TO BE VALID 
-					ipAddressTextField.setEditable(false);
-					portTextField.setEditable(false);
-					userNameTextField.setEditable(false);
-					connectBtn.setEnabled(false);
-					messageTextField.setEditable(true);
-					
-					IP_ADDRESS = tempIP; 
-					PORT = tempPort; 
-					SCREEN_NAME = tempSN; 
-					
-					// FORM THE CONNECTION 
-					try {
-						createConnection();
-					} catch (Exception e) {
-						System.out.println("Connection to Server could not be created.");
-						e.getMessage();
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		connectBtn.addActionListener(new ConnectListener()); 
 		level3.add(connectBtn); 
 		
 		// setup connection panel 
@@ -812,50 +632,22 @@ public class GUI extends JFrame implements ActionListener{
 
 		if(goodMove && sternCol == midCol && midCol == bowCol){
 			if(sternRow == midRow+1){
-				if(midRow == bowRow +1){
-					
-				}
-				else{
-					goodMove = false;
-				}
-			}
-			else if(sternRow == midRow-1){
-				if(midRow == bowRow - 1){
-					
-				}
-				else{
-					goodMove = false;
-				}
-			}
-			else{
-				goodMove = false;
-			}
+				if(midRow == bowRow +1){ }
+					else { goodMove = false;}
+			} else if(sternRow == midRow-1){
+				if(midRow == bowRow - 1){ }
+					else{ goodMove = false;}
+			} else{ goodMove = false; }
 		}
 		else if(goodMove && sternRow == midRow && midRow == bowRow){
 			if(sternCol == midCol + 1){
-				if(midCol == bowCol + 1){
-				}
-				else {
-					goodMove = false;
-				}
-			}
-			else if(sternCol == midCol - 1){
-				if(midCol == bowCol - 1){
-					
-				}
-				else{
-					goodMove = false;
-				}
-			}
-			else{
-				goodMove = false;
-			}    
-		}
-		else{
-			if(goodMove){
-				goodMove = false;
-			}
-		}
+				if(midCol == bowCol + 1){ }
+				else { goodMove = false; }
+			} else if(sternCol == midCol - 1){
+				if(midCol == bowCol - 1){ }
+					else{ goodMove = false;}
+			} else{ goodMove = false; }    
+		} else{ if(goodMove){ goodMove = false;} }
 		return goodMove;
 	}
 	
@@ -891,7 +683,6 @@ public class GUI extends JFrame implements ActionListener{
 		for (String s: connectedUserList) {
 			userList.append(s + "\n");
 		}
-		
 	}
 	
 	/*
@@ -915,12 +706,11 @@ public class GUI extends JFrame implements ActionListener{
 			System.out.println("Unable to cast Object to JButton"); 
 		}
 
-		// Sends GameMove indicator, indicating that the transmission is a game move 
-		// Sends the buttons text [btnText] (identifying the location to be attacked)
-		// Sends the SCREEN_NAME of the person attacking 
+		// Sends (1) GameMove indicator, indicating that the transmission is a game move 
+		// Sends (2) the buttons text [btnText] (identifying the location to be attacked)
+		// Sends (2) the SCREEN_NAME of the person attacking 
 		sendTransmission(GAME_MOVE, btnText, SCREEN_NAME); 
 		// NOTE: That location will be 1 greater than ArrayList location 
-
 	}
 		
 	
@@ -931,4 +721,162 @@ public class GUI extends JFrame implements ActionListener{
 		GUI test = new GUI();
 	}
 	
+	
+	
+	public class ConnectListener implements ActionListener {
+		public ConnectListener(){}
+		
+		public void actionPerformed(ActionEvent ae) {
+			// pull in values from text boxes 
+				String tempIP, tempPort, tempSN; 
+				tempIP = ipAddressTextField.getText(); 
+				tempPort = portTextField.getText(); 
+				tempSN = userNameTextField.getText(); 
+				
+				/* FOR TESTING PURPOSES
+				System.out.println("IP Address: " + tempIP
+					+ "\n" + "Port: " + tempPort
+					+ "\n" + "Screen Name: " + tempSN);
+				*/                 
+				
+				
+				if (tempIP.equals("")) {
+					JOptionPane.showMessageDialog(null,
+						 "Please enter an IP Address", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				} else if (tempPort.equals("")) {
+					JOptionPane.showMessageDialog(null, 
+						" Please enter a Port Number", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				} else if (tempSN.equals("")) {
+					JOptionPane.showMessageDialog(null, 
+						"Please enter a Screen Name", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				} else if (tempIP.length() < 5) {
+					JOptionPane.showMessageDialog(null, 
+						"Invalid IP Address Entered\n\nPlease enter a valid IP address", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				} else if (tempPort.length() < 3) {
+					JOptionPane.showMessageDialog(null, 
+					"Invalid Port Number Entered\n\nPlease enter a valid Port Number", 
+					"Error", JOptionPane.ERROR_MESSAGE);
+				} else if (tempSN.length() < 3) {
+					JOptionPane.showMessageDialog(null, 
+					"Invalid Screen Name entered\n\nPlease enter a screen name that" + 
+					"is greater than 3 characters", 
+					"Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					// INPUTS ASSUMED TO BE VALID 
+					ipAddressTextField.setEditable(false);
+					portTextField.setEditable(false);
+					userNameTextField.setEditable(false);
+					connectBtn.setEnabled(false);
+					messageTextField.setEditable(true);
+					
+					IP_ADDRESS = tempIP; 
+					PORT = tempPort; 
+					SCREEN_NAME = tempSN; 
+					
+					// FORM THE CONNECTION 
+					try {
+						createConnection();
+					} catch (Exception e) {
+						System.out.println("Connection to Server could not be created.");
+						e.getMessage();
+						e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	public class PlaceShipsListener implements ActionListener {
+		
+		public PlaceShipsListener(){}
+		
+		public void actionPerformed(ActionEvent ae){
+			for (JButton b: board2) {
+					b.setEnabled(true);
+				}
+				
+				boolean validShips = true;
+				
+				// default ship position to impossible position 
+				// of negative 1 
+				int s1Bow = -1; 
+				int s1Mid = -1;                 
+				int s1Stern = -1; 
+				
+				int s2Bow = -1;
+				int s2Mid = -1;
+				int s2Stern = -1; 
+				
+				int s3Bow = -1; 
+				int s3Mid = -1; 
+				int s3Stern = -1; 
+				
+				try{
+					s1Bow = Integer.parseInt(ship1bow.getText());
+					s1Mid = Integer.parseInt(ship1mid.getText());
+					s1Stern = Integer.parseInt(ship1stern.getText());
+					
+					s2Bow = Integer.parseInt(ship2bow.getText());
+					s2Mid = Integer.parseInt(ship2mid.getText());
+					s2Stern = Integer.parseInt(ship2stern.getText());
+					
+					s3Bow = Integer.parseInt(ship3bow.getText());
+					s3Mid = Integer.parseInt(ship3mid.getText());
+					s3Stern = Integer.parseInt(ship3stern.getText());
+					
+					if(checkValidLocation(s1Bow, s1Mid, s1Stern)
+					&&checkValidLocation(s2Bow, s2Mid, s2Stern)
+					&&checkValidLocation(s3Bow, s3Mid, s3Stern)){
+						addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+						addSimultaneousShip(s3Bow, s3Mid, s3Stern);
+					}
+					else {
+						createErrorMessage("Ship Placement Error: placements must be between 1 and 63, and must be in a horizontal or vertical line");
+					}
+				} catch (Exception e){
+					createErrorMessage("Ship Placement Error: All values must be supplied, all must be numeric");
+				}
+			
+				
+				//TODO catch exceptions thrown by somebody putting in a non numeric value here. 
+				// and trying to Integer.parseInt().
+				ArrayList<Integer> locs = new ArrayList<Integer>();
+				locs.add(s1Bow);
+				locs.add(s1Mid);
+				locs.add(s1Stern);
+				locs.add(s2Bow);
+				locs.add(s2Mid);
+				locs.add(s2Stern);
+				locs.add(s3Bow);
+				locs.add(s3Mid);
+				locs.add(s3Stern);
+				for (int i = 0; i < 9; i++) {//checks to see if any ships overlap
+					if(locs.indexOf(locs.get(i)) != i){
+						validShips = false;
+						System.out.println("Ships overlap");
+					}
+					if(locs.get(i) > 64 || locs.get(i) < 1){//ensures that all ships are in bounds
+						System.out.println("Ships out of bounds");
+						validShips = false;
+					}
+				}
+				
+				if(validShips && checkValidLocation(s1Bow, s1Mid, s1Stern)
+				&& checkValidLocation(s2Bow, s2Mid, s2Stern)
+				&& checkValidLocation(s3Bow, s3Mid, s3Stern)){
+					addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+					addSimultaneousShip(s2Bow, s2Mid, s2Stern);
+					addSimultaneousShip(s3Bow, s3Mid, s3Stern);
+			}
+		}
+	}
 }
