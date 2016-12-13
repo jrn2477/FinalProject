@@ -634,6 +634,10 @@ public class GUI extends JFrame implements ActionListener{
 		@version: 12/5/16
 	*/ 
 	public static void processTransmission(String trans) {
+		if (trans.equals(null)) {
+			JOptionPane.showMessageDialog(null, "Lost connection to server. Please close and re-connect");
+		}
+		
 		if (trans.startsWith("_N3WUS3R_")) {
 			// get username 
 			connectedUserList.clear();
@@ -721,16 +725,9 @@ public class GUI extends JFrame implements ActionListener{
 				System.out.println("SplitTrans[4] == "+splitTrans[2]);
 				System.out.println("String 'temp' == "+ temp);
 				
-				/*
-					buttons.get(indexInArrayList).setBackground(Color.red);
-					buttons.get(indexInArrayList).setOpaque(true);
-					buttons.get(indexInArrayList).setBorderPainted(false);
-					buttons.get(indexInArrayList).setEnabled(false);
-				*/
 				int pos = Integer.parseInt(temp); 
 				
 				if (splitTrans[4].equals(gameID)) {
-					System.out.println("I want a puppy");
 					System.out.println("ProcessTransmission.gameMove.thisGameID");
 					// Change colors 
 					// go through the arraylist, get the position (plus 1), 
