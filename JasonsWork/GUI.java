@@ -779,7 +779,9 @@ public class GUI extends JFrame implements ActionListener{
 		board1.get(mid).setBackground(friendlyShipColor);
 		board1.get(stern).setOpaque(true);
 		board1.get(stern).setBackground(friendlyShipColor);
-		//TODO these values are still not currently stored anywhere, the change is purely aesthetic. so, figure that out soon. could probably just be done in an int[] containing indexes of valid ships.
+		//TODO these values are still not currently stored anywhere, 
+		//the change is purely aesthetic. so, figure that out soon. could 
+		//probably just be done in an int[] containing indexes of valid ships.
 		shipLocations.add(bow);
 		shipLocations.add(mid);
 		shipLocations.add(stern);

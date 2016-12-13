@@ -14,7 +14,7 @@ public class Server {
 	
 	private static int PORT = 6760;
 	// the connections of clients 
-	private static ConcurrentLinkedDeque<ThreadedServer> connectedClients = new ConcurrentLinkedQueue<ThreadedServer>();     
+	private static ConcurrentLinkedQueue<ThreadedServer> connectedClients = new ConcurrentLinkedQueue<ThreadedServer>();     
 	// names of the people who are connected
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
