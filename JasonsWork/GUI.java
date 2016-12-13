@@ -295,7 +295,7 @@ public class GUI extends JFrame implements ActionListener{
 			try {
 				pw = new PrintWriter(new OutputStreamWriter(
 					socket.getOutputStream())); 
-				pw.println("_US3R_" + SCREEN_NAME);
+				pw.print("_US3R_" + SCREEN_NAME);
 				pw.flush(); 
 			} catch (Exception e) {
 				System.out.println("Unable to send username to server"); 
@@ -326,7 +326,7 @@ public class GUI extends JFrame implements ActionListener{
 			String regex = REGEX;
 			// TESTING PURPOSES:
 			// System.out.println("PW: " + pw.toString());
-			pw.println(regex + transmissionType + regex + userName + regex + transmissionContent + regex + gameID);
+			pw.print(regex + transmissionType + regex + userName + regex + transmissionContent + regex + gameID);
 			pw.flush();
 		} catch (Exception e) {
 			e.getMessage();

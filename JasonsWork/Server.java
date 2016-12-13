@@ -156,7 +156,7 @@ public class Server {
 			PrintWriter pw; 
 			try {
 				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
-				pw.println(trans); 
+				pw.print(trans); 
 				pw.flush();
 			} catch (Exception e) {
 				System.out.println("Error sending transmission"); 
