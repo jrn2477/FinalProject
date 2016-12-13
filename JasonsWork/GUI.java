@@ -34,8 +34,8 @@ public class GUI extends JFrame implements ActionListener{
 	private static JTextArea chatTextArea, userList; 
 	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField,
 		ship1bow, ship1mid, ship1stern, ship2bow, ship2mid, ship2stern, ship3bow, ship3mid, ship3stern; 
-	private JButton sendMessageBtn, connectBtn, placeshipsBtn; 
-	 private static Socket socket;
+	private static JButton sendMessageBtn, connectBtn, placeshipsBtn; 
+	private static Socket socket;
 	private static BufferedReader br; 
 	private static PrintWriter pw; 
 	private static boolean connected;
@@ -304,7 +304,12 @@ public class GUI extends JFrame implements ActionListener{
 			}
 			ChatReader cr = new ChatReader(socket);
 			cr.start();
-		} catch (Exception e) { e.getMessage(); e.printStackTrace(); }
+		} catch (Exception e) {  
+			createErrorMessage(e.getMessage());
+			connectBtn.setEnabled(true);
+			e.getMessage(); 
+			e.printStackTrace(); 
+			}
 	}
 	/*
 		Method to send a transmission to the server 
@@ -334,7 +339,7 @@ public class GUI extends JFrame implements ActionListener{
 		}
 	}
 	
-	public void createErrorMessage(String s) {
+	public static void createErrorMessage(String s) {
 		JOptionPane.showMessageDialog(null, s,
 					 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
 	}
