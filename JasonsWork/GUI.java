@@ -23,6 +23,7 @@ public class GUI extends JFrame implements ActionListener{
 	private static final String GAME_PLACEMENT_INDICATOR = "GP";
 	private static final String GAME_MOVE = "GM"; 
 	private static final String GAME_RESPONSE  = "GR";
+	private static final String GAME_START = "GS"; 
 	private static int gameID;//will indicate which game the user is in
 
 	private static final String OPP_BOARD = "Opponents Board"; 
@@ -168,7 +169,6 @@ public class GUI extends JFrame implements ActionListener{
 					b.setEnabled(true);
 				}
 				
-				System.out.println("you pressed that button");
 				boolean validShips = true;
 				
 				// default ship position to impossible position 
@@ -660,15 +660,20 @@ public class GUI extends JFrame implements ActionListener{
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
 			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){
-				System.out.println("In Game Placement Loop");
 				System.out.println("My IP Address: "+MY_IP);
-				System.out.println(splitTrans[2]); // check p1 IP 
-				System.out.println(splitTrans[3]); // check p2 IP (could be vice-versa )
+				
+				String p1Name = splitTrans[2]; 
+				String p2Name = splitTrans[3]; 
+				String game = splitTrans[4]; 
+				
+				appendChat("Game " + game + " started between " + p1Name + "(player 1) and " + p2Name + "(player 2)"); 
+				
+				/*
 				if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){ // if either p1 or p2 
 					gameID = Integer.parseInt(splitTrans[4]);
 					System.out.println("Inside GPI loop - > Parsing IP address");
 					System.out.println("we have been placed into game" + gameID);
-				}
+				}*/ 
 				//-Nick
 				//gameID = Integer.parseInt(splitTrans[2]); //this SHOULD contain the new game ID
 				//TODO make sure that it still works when gameID is static, 
