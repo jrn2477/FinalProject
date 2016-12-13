@@ -32,7 +32,7 @@ public class GUI extends JFrame implements ActionListener{
 	private JPanel myBoardPanel, oppBoardPanel, boardsPanel, gamePanel, gameBoard1, gameBoard2, 
 		chatPanel, shipPositionsPanel, connectionPanel; 
 	private static JTextArea chatTextArea, userList; 
-	private JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField,
+	private static JTextField messageTextField, ipAddressTextField, portTextField, userNameTextField,
 		ship1bow, ship1mid, ship1stern, ship2bow, ship2mid, ship2stern, ship3bow, ship3mid, ship3stern; 
 	private static JButton sendMessageBtn, connectBtn, placeshipsBtn; 
 	private static Socket socket;
@@ -305,8 +305,13 @@ public class GUI extends JFrame implements ActionListener{
 			ChatReader cr = new ChatReader(socket);
 			cr.start();
 		} catch (Exception e) {  
+			// re-enable disabled fields
 			createErrorMessage(e.getMessage());
+			ipAddressTextField.setEditable(true);
+			portTextField.setEditable(true);
+			userNameTextField.setEditable(true);
 			connectBtn.setEnabled(true);
+			messageTextField.setEditable(false);
 			e.getMessage(); 
 			e.printStackTrace(); 
 			}
