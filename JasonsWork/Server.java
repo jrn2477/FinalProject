@@ -3,6 +3,7 @@ import java.io.*;
 import java.util.*;
 import java.nio.*;
 import java.util.concurrent.*;
+import java.lang.Math;
 
 /*
 	@author: Team Flying Mongooeses (Nick Kowalczuk, Jason Nordheim, Lauren Hoffman) 
@@ -12,15 +13,20 @@ import java.util.concurrent.*;
 */ 
 public class Server {
 	
-	private static int PORT = 6760;
+	private static int PORT = 6761;
+	private static final String REGEX = "_h3ll_"; 
+	private static final String GAME_MOVE = "GM"; 
+	private static final String ATTACK_INDICATOR = "A";
+	private static final String GAME_RESPONSE  = "GR";
+
 	// the connections of clients 
 	private static ConcurrentLinkedQueue<ThreadedServer> connectedClients = new ConcurrentLinkedQueue<ThreadedServer>();     
 	// names of the people who are connected
 	private static ArrayList<String> connectedUsers = new ArrayList<String>();
 	// queue of clients who have not yet been placed into a game
 	private ConcurrentLinkedQueue<ThreadedServer> matchMakingQueue = new ConcurrentLinkedQueue<ThreadedServer>();
-	private final String REGEX = "_h3ll_";//used in server generated transmissions
 	private static final String GAME_PLACEMENT_INDICATOR = "GP"; //indicates that the transmission contains the game ID in which the user has been placed
+
 	
 	/* 
 		Default Constructor 
@@ -56,6 +62,12 @@ public class Server {
 				connectedClients.add(ths);
 				matchMakingQueue.add(ths);
 				if(matchMakingQueue.size()> 1){
+					// CREATE A DELAY 
+					double b = 30; 
+					for (int i = 29; i > 0; i--) {
+						b = b * i * Math.PI * Math.PI;
+						//System.out.println(b);
+					}
 					matchCount++;
 					System.out.println("MatchMakingQueue Block, Size : "+matchMakingQueue.size());
 					ThreadedServer p1 = matchMakingQueue.poll();
@@ -83,6 +95,7 @@ public class Server {
 	public class ThreadedServer extends Thread {
 		Socket cs; 
 		String screenName; 
+		String clientIP; 
 		
 		/*
 			Default Constructor 
@@ -93,7 +106,10 @@ public class Server {
 		*/ 
 		public ThreadedServer(Socket s){
 			cs = s; 
-			System.out.println("Threaded Server Created");        
+			System.out.println("Threaded Server Created");    
+			String fullip = this.cs.getInetAddress().toString(); 
+			int index = fullip.indexOf("/");
+			clientIP = fullip.substring(index + 1);    
 		}
 		
 		/* 
@@ -115,27 +131,101 @@ public class Server {
 				transmission = br.readLine(); 
 				System.out.println("Server Recieved transmission: " + transmission); 
 				
+				String parsedTrans = transmission.substring(REGEX.length()); 
+				System.out.println("Parsed Trans: "+parsedTrans);
+				String[] t = transmission.split(REGEX);
+				
+				
+				
+				
+				
+				// GAME RESPONSE 
+				if (parsedTrans.startsWith(GAME_RESPONSE)) {
+					System.out.println("Game Response Recieved");
+				    //TRANSMISSION IS A GAME RESPONSE 
+				    String trans = transmission.substring(GAME_RESPONSE.length(), transmission.length());
+				    String split[] = trans.split(REGEX); 
+				    
+				    String index = split[0]; 
+				    String hitMiss = split[1]; 
+				    String oppIP = split[2]; // TO 
+				    String myIP = split[3]; // FROM 
+				    
+				    System.out.println(split[5]); 
+				    
+				    if(myIP.equals(this.clientIP)) {
+				        for (ThreadedServer ths: connectedClients) {
+    						if (ths.clientIP.equals(oppIP)) {
+    							sendTransmission(GAME_RESPONSE + index + REGEX + hitMiss +REGEX); 
+    						}
+    					}
+				    } 
+				    else { /* I am not being attacked, do nothing */ }
+				}
+				
+				
+				
+				
+				
+				
+				// TRANSMISSION IS A GAME ATTACK 
+				if (parsedTrans.startsWith(ATTACK_INDICATOR)) {
+					System.out.println("Attacked Recieved"); 
+    				String[] split = transmission.split(REGEX); 
+    				
+
+
+    				String personFromIP = split[3];
+    				String personToIP = split[4]; 
+    				String locationAttacked = split[5];
+
+					System.out.println("FROM: " + personFromIP );
+					System.out.println("TO: " + personToIP); 
+					System.out.println("POS: " + locationAttacked); 
+
+    				
+    				if (personToIP.equals(this.clientIP)) {
+    					// I am being attacked 
+    					// send the attack to the appropirate client 
+    					for (ThreadedServer ths: connectedClients) {
+    						if (ths.clientIP == personToIP) {
+								String outmsg= (ATTACK_INDICATOR + personFromIP 
+								+ REGEX + personToIP +REGEX + locationAttacked);
+								System.out.println("Sending message to: " + ths.clientIP); 
+								System.out.println("Out Message: " + outmsg);
+    							sendTransmission(outmsg); 
+    						}
+    					}
+    				} else { /* I am attacking, do nothing */  }
+    			}// end trasminssion.startsWith(GAME_MOVE)
+    			
+    			
+
+
+
+    			
+    			// TRANSMISSION IS A NEW USER 
 				if (transmission.startsWith("_US3R_")) {
-					// Process Username 
-					String usrName = transmission.substring(6); 
+					String usrName = transmission.substring(6);	// Process Username 
 					screenName = usrName; 
-					// Print to console 
-					System.out.println("User <" + screenName + "> connected"); 
-					// add user to arraylist
-					connectedUsers.add(screenName);
+					System.out.println("User <" + screenName + "> connected"); 	// Print to console 
+					connectedUsers.add(screenName);// add user to arraylist
 					// send list out to clients 
 					String outmsg = announceUsers();
 					for (ThreadedServer ths : connectedClients) {
 						((ThreadedServer)ths).sendTransmission(outmsg);
-					}
-				} else {
-					
-					// Send the transmission verbatem to all connected clients
+    					}
+				}//end transmission.startWith("_US3R_"); 
+				else { // Send the transmission verbatem to all connected clients
 					for (ThreadedServer ths : connectedClients) {
 						System.out.println("Sending: "+ transmission);
-						System.out.println("To: "+ ths.screenName);
-						((ThreadedServer)ths).sendTransmission(transmission);
-						((ThreadedServer)ths).sendTransmission(announceUsers());
+						if (ths.screenName == null) {
+							// do nothing 
+						} else {
+							System.out.println("To: "+ ths.screenName);
+							((ThreadedServer)ths).sendTransmission(transmission);
+							((ThreadedServer)ths).sendTransmission(announceUsers());
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -156,7 +246,7 @@ public class Server {
 			PrintWriter pw; 
 			try {
 				pw = new PrintWriter(new OutputStreamWriter(cs.getOutputStream())); 
-				pw.print(trans); 
+				pw.println(trans); 
 				pw.flush();
 			} catch (Exception e) {
 				System.out.println("Error sending transmission"); 
@@ -182,9 +272,12 @@ public class Server {
 			String p2Name = player2.screenName;
 			String p2fullIP = player2.cs.getInetAddress().toString(); 
 			int p2index = p2fullIP.indexOf("/");
-			String p2trimedIP = p2fullIP.substring(p2index + 1);
+			String p2trimedIP = p2fullIP.substring(p2index + 2);
 			
-			sendTransmission(REGEX + GAME_PLACEMENT_INDICATOR + REGEX + p1Name + REGEX + p2Name + REGEX + gameNum);
+			System.out.println("Starting Game"); 
+			sendTransmission("_G@M3_" + p1trimedIP + REGEX + p2fullIP + REGEX + gameNum + REGEX); 
+			sendTransmission(REGEX + GAME_PLACEMENT_INDICATOR + REGEX 
+			+ p1Name + REGEX + p2Name + REGEX + gameNum);
 			//sendTransmission(REGEX+"M"+"Server"+"You were placed in game")
 			//sends a transmission to user indicating the game in which the have been placed
 			//client-side: see processTransmission().

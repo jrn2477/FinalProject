@@ -1,11 +1,12 @@
 import javax.swing.*;
 import javax.swing.border.*;
 import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
+import java.awt.*;
 import javax.swing.JOptionPane.*;
 import java.net.*;
 import java.io.*;
+import javax.xml.ws.handler.*;
 
 /*
 	@author: Team Flying Mongooses (Nick Koowalcuk, Lauren Hoffman, Jason Nordheim) 
@@ -25,6 +26,9 @@ public class GUI extends JFrame implements ActionListener{
 	private static final String GAME_RESPONSE  = "GR";
 	private static final String GAME_START = "GS"; 
 	private static int gameID;//will indicate which game the user is in
+	private static String OPPONENT_IP = null; 
+	private static int hits = 0; 
+	
 
 	private static final String OPP_BOARD = "Opponents Board"; 
 	private static ArrayList<JButton> board1 = new ArrayList<JButton>(); 
@@ -62,10 +66,64 @@ public class GUI extends JFrame implements ActionListener{
 			e.printStackTrace();
 		}
 		
+		JMenuBar jmb = new JMenuBar();
+		JMenu file = new JMenu("File");
+		JMenuItem jmi_help = new JMenuItem("Help"); 
+		jmi_help.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				JOptionPane.showMessageDialog(null, 
+				"Before the players begin guessing the locations of the ships they first have to place \n"+
+				"their ships on the game board. Each player has exactly three ships and the ships are \n"+
+				"three units long.  If the player does not have enter positions for all 3 ships the game \n"+
+				"displays an error message. The application will also display error messages if the \n"+
+				"player tries to place a ship less than 3 units long, or the entered locations are not\n"+
+				"contiguous . The ships can only be placed vertically and horizontally on the board \n"+
+				"and the ships cannot overlap.  Players can reset their ship locations before the game\n"+
+				"starts, but once the game starts, the ship's positions are fixed. \n\n\n"+
+				
+				"Once all the players have committed their ships locations, the players can start guessing\n"+
+				"the locations.  That location then changes color according to the result. Red marks \n"+ 
+				"result. Red marks a place where a ship is located and blue marks empty water where there is \n"+
+				"no ship. The game is over when all the ships have been found. The winner is determined by \n"+
+				"whichever player had the least amount of moves. When the game ends a pop up appears\n"+
+				"displaying the number of moves for that user and the winning player’s username.\n"
+				);
+			}
+		});
+		
+		
+		JMenuItem jmi_about = new JMenuItem("About");
+		jmi_about.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				JOptionPane.showMessageDialog(null, 
+				"BattleBoats is a multiplayer battleship game with a chat feature.  Each\n" +
+				"player loads the game and enters a the IP address, and Port of the server in order to\n" + 
+				"connect. They also must provide a username, which will identify them in the chat \n"+ 
+				"feature of the application. All this must occur before the user can launch the game.\n\n\n"+
+				
+				"Game Created By: Jason Nordheim, Nick Kowalczuk, Lauren Hoffman"
+				);
+			}
+		});
+
+		JMenuItem jmi_exit = new JMenuItem("Exit");
+		jmi_exit.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae ){
+				System.exit(0); 
+			}
+		});
+		
+		file.add(jmi_about);
+		file.add(jmi_help);
+		file.add(jmi_exit);
+		jmb.add(file);
+		
+		
 		//Listener listen = new Listener(); 
 		setTitle("Let's Play Battleship"); 
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE); 
+		setJMenuBar(jmb);
 		getContentPane().setLayout(new FlowLayout(FlowLayout.LEFT,10,10));
 		setUpGameBoards(); 
 		setUpChat();
@@ -135,27 +193,18 @@ public class GUI extends JFrame implements ActionListener{
 		// disable fields by default 
 		// Ship 1 Textfields 
 		ship1bow = new JTextField(2);
-		ship1bow.setEditable(false); 
 		ship2bow = new JTextField(2);
-		ship2bow.setEditable(false);
 		ship3bow = new JTextField(2);
-		ship3bow.setEditable(false);
-		
+
 		// Ship 2 Textfields 
-		JTextField ship1mid = new JTextField(2);
-		ship1mid.setEditable(false); 
-		JTextField ship2mid = new JTextField(2);
-		ship2mid.setEditable(false); 
-		JTextField ship3mid = new JTextField(2);
-		ship3mid.setEditable(false);    
+		ship1mid = new JTextField(2);
+	    ship2mid = new JTextField(2);
+		ship3mid = new JTextField(2);
 		
 		// ship 3 textfields 
 		ship1stern = new JTextField(2);
-		ship1stern.setEditable(false); 
 		ship2stern = new JTextField(2);
-		ship2stern.setEditable(false); 
 		ship3stern = new JTextField(2);
-		ship3stern.setEditable(false);    //TODO uncomment these when out of development
 		
 		// place ships button
 		placeshipsBtn = new JButton("Place Ships!");
@@ -260,7 +309,7 @@ public class GUI extends JFrame implements ActionListener{
 		
 		//set up chat panel 
 		chatPanel = new JPanel(new BorderLayout(5,5)); 
-		chatPanel.add(chatTextArea, BorderLayout.CENTER); 
+		chatPanel.add(jscp2, BorderLayout.CENTER); 
 		
 		// set up messaging panel 
 		JPanel sendMessagePanel = new JPanel(new FlowLayout()); 
@@ -268,7 +317,7 @@ public class GUI extends JFrame implements ActionListener{
 		sendMessagePanel.add(sendMessageBtn); 
 		chatPanel.add(sendMessagePanel, BorderLayout.SOUTH);
 		chatPanel.add(connectionPanel, BorderLayout.NORTH);
-		chatPanel.add(userList, BorderLayout.WEST);
+		chatPanel.add(jscp1, BorderLayout.WEST);
 		
 		// add to the content pane
 		this.getContentPane().add(chatPanel);
@@ -285,8 +334,6 @@ public class GUI extends JFrame implements ActionListener{
 			// Create connection
 			socket = new Socket(IP_ADDRESS,Integer.parseInt(PORT)); 
 			InetAddress add = socket.getInetAddress(); 
-			System.out.println(add.toString());
-			System.out.println(IP_ADDRESS);
 			System.out.println("Connect to Server at: " + IP_ADDRESS);        
 			
 			// Pass the username to server
@@ -344,7 +391,7 @@ public class GUI extends JFrame implements ActionListener{
 	
 	public static void createErrorMessage(String s) {
 		JOptionPane.showMessageDialog(null, s,
-					 "Ship Placement Error", JOptionPane.ERROR_MESSAGE);
+					 "ERROR", JOptionPane.ERROR_MESSAGE);
 	}
 	
 	/*
@@ -407,19 +454,10 @@ public class GUI extends JFrame implements ActionListener{
 			
 			System.out.println("Chatreader Started");
 
-			int i = 0; 
-			
 			connected = true;
 			
 			while (connected) {
 				pullFromServer();
-				System.out.println(i); 
-				try    {
-					this.sleep(100);
-				} catch (Exception e) {
-					e.getMessage();
-					e.printStackTrace();
-				}
 			}
 		}
 		
@@ -436,10 +474,14 @@ public class GUI extends JFrame implements ActionListener{
 				BufferedReader br = new BufferedReader(
 					new InputStreamReader(socket.getInputStream()));
 				String transmission = br.readLine(); 
-				System.out.println("transmission recieved: "+ transmission);
 				
-				//  ADD CODE FOR TRANSMISSION PROCESSING 
-				processTransmission(transmission);
+				if (transmission != null) {
+					System.out.println("My IP" + MY_IP);
+					System.out.println("transmission recieved: "+ transmission);
+					processTransmission(transmission);
+				} else {
+					createErrorMessage("Connection to server lost");
+				}
 								
 				} catch (Exception e) {
 				e.getMessage(); 
@@ -448,7 +490,96 @@ public class GUI extends JFrame implements ActionListener{
 		}
 		
 	}//end ChatReader 
+	public static void startGame(String in){
+	    System.out.println("IN : " + in); 
+		String ind = "_G@M3_"; 
+	    String message = in.substring(ind.length(), in.length());
+		System.out.println("MESSAGE : " + message); 
 	
+		String[] split = message.split(REGEX);
+		
+		String p1IP = split[0]; 
+		String p2IP = split[1]; 
+		String gameNum = split[2]; 
+		
+		/* I am player 1 */ 
+		if (p1IP.equals(MY_IP)) { OPPONENT_IP = p2IP; }
+		/* I am player 2 */
+		else { OPPONENT_IP = p1IP; }
+		gameID = Integer.parseInt(gameNum);
+		
+		// ENABLE COMPONENTS 
+		placeshipsBtn.setEnabled(true); 
+		appendChat("Your game has started... Place your ships");  
+	}
+	
+	/*
+	    Method to process game attacks
+	    @author: Paul 
+	    @version 12/13/16
+	    @param: input - the transmission recieved by the client 
+	*/
+	public static void processGameAttack(String input){
+	    // 1. Attack indicator 
+	    // 2. person from 
+	    // 3. person to 
+	    // 4. attack posittion 
+	    
+	    // Removed ATTACK INDICATOR, parse and split string 
+		String put = input.substring(1, input.length());
+	    String split[] = put.split(REGEX); 
+	    
+	    String personFrom = split[1]; 
+	    String personTo = split[2]; 
+	    String attackPos = split[3]; 
+	    
+	    int attIndex = (Integer.parseInt(attackPos) - 1) ;
+	    
+	    // Test attacked Location 
+	    if(shipLocations.contains(attIndex)){
+	        board1.get(attIndex).setBackground(Color.RED);
+	        hits++;
+	        replyToAttack(attackPos, true);
+	    }
+	    else {
+	        board1.get(attIndex).setOpaque(true);
+	        board1.get(attIndex).setBackground(Color.BLUE);
+	        replyToAttack(attackPos, false);
+	    }
+	}
+	
+	
+	
+	public static void processResponse(String index, String hitMiss) {
+	    int ind = Integer.parseInt(index);
+	    ind--;
+	    if(hitMiss.equals("h")){
+	        board2.get(ind).setOpaque(true);
+	        board2.get(ind).setBackground(Color.RED);
+	    }
+	    else{
+	        board2.get(ind).setOpaque(true);
+	        board2.get(ind).setBackground(Color.BLUE);
+	    }
+	}
+	
+	
+	
+	/*
+	    Method to announce hit or miss to opponent 
+	    @author: Paul 
+	    @version 12/13/16 
+	    @param: index - the position attacked 
+	    @param: hitMiss - whether the position attacked was a hit/miss 
+	*/ 
+	public static void replyToAttack(String index, boolean hitMiss){
+	    if(hitMiss){
+	        sendTransmission(GAME_RESPONSE, index+REGEX+"h", "The game is trying to respond" );
+	    }
+	    else{
+	        sendTransmission(GAME_RESPONSE, index+REGEX+"m", "The game is trying to respond" );
+	    }
+	}
 	/* 
 		Method to Process Transmissions from the server, the method will parse 
 		the transmission to determine the type of transmission before processing 
@@ -461,11 +592,45 @@ public class GUI extends JFrame implements ActionListener{
 			JOptionPane.showMessageDialog(null, "Lost connection to server. Please close and re-connect");
 		}
 		
+		String[] split = trans.split(REGEX);
+		
+		System.out.println("Split 1: " + split[0]);
+		
+		if (split[0].equals(GAME_RESPONSE)) {
+			System.out.println("Game Response Recieved"); 
+		    String index = split[1];
+		    String hitMiss = split[2];
+			processResponse(index, hitMiss);
+		}
+				
+		if(split[0].equals(ATTACK_INDICATOR)){
+			System.out.println("Game Attack Recieved"); 
+			processGameAttack(trans);
+		}
+		
+		if (split[0].equals(GAME_PLACEMENT_INDICATOR)) {
+			String p1Name = split[2]; 
+			String p2Name = split[3]; 
+			String game = split[4];
+			appendChat("Game " + game + " started between " + p1Name 
+			+ "(p1) and " + p2Name + "(p2)"); 
+		}
+		
+		
+		// NEW GAME 
+		if (trans.startsWith("_G@M3_")) {
+			if (trans.substring(6).equals(MY_IP)) {
+				startGame(trans); 
+			} else if (split[2].equals(MY_IP)){
+				startGame(trans);
+			}
+		}
+		
 		if (trans.startsWith("_N3WUS3R_")) {
 			// get username 
 			connectedUserList.clear();
 			//System.out.println("inside N3WUS3R block");
-			int startPos = ("_N3WUS3R_").length();
+			int startPos = ("_N3WUS3R/_").length() - 1;
 			String nameList = trans.substring(startPos); 
 			//System.out.println("Name List: " + nameList); 
 			String[] tempList = nameList.split("_E50328A_");
@@ -482,41 +647,8 @@ public class GUI extends JFrame implements ActionListener{
 				// Transmission is a message 
 				processMessage(splitTrans[2], splitTrans[3]);
 			}
-			else if(splitTrans[1].equals(GAME_PLACEMENT_INDICATOR)){
-				System.out.println("My IP Address: "+MY_IP);
-				
-				String p1Name = splitTrans[2]; 
-				String p2Name = splitTrans[3]; 
-				String game = splitTrans[4]; 
-				
-				appendChat("Game " + game + " started between " + p1Name + "(player 1) and " + p2Name + "(player 2)"); 
-				
-				/*
-				if(splitTrans[2].equals(MY_IP) || splitTrans[3].equals(MY_IP)){ // if either p1 or p2 
-					gameID = Integer.parseInt(splitTrans[4]);
-					System.out.println("Inside GPI loop - > Parsing IP address");
-					System.out.println("we have been placed into game" + gameID);
-				}*/ 
-				//-Nick
-				//gameID = Integer.parseInt(splitTrans[2]); //this SHOULD contain the new game ID
-				//TODO make sure that it still works when gameID is static, 
-				// which I had to do to make this method compile.
-				
-				//we could get around this if we made the game ID an attribute of
-				//  the thread rather than of the GUI.java.8
-				
-				//nevermind, it all has to be static due to the way that 
-				// the thing checks for messages.
-				try { 
-					// OLD >> gameID = Integer.parseInt(splitTrans[5]); // 
-					MY_IP = splitTrans[5].toString(); 
-					
-				} catch (Exception e) {
-					// OLD >> gameID = Integer.parseInt(splitTrans[2]); // 
-					MY_IP = splitTrans[2].toString(); 
-				}
-			}
 			
+			/*
 			if (splitTrans[1].equals(GAME_MOVE) && !splitTrans[2].equals(SCREEN_NAME)) {
 				String userName = splitTrans[2]; // get the username 
 				String tempPos = splitTrans[3]; // Position as a string 
@@ -537,8 +669,8 @@ public class GUI extends JFrame implements ActionListener{
 						System.out.println("Sending miss indicator"); // CHECK  
 					}
 				}
-			}
-			if (splitTrans[1].equals(GAME_RESPONSE) && !splitTrans[3].equals(SCREEN_NAME)) {
+			}*/
+			if (splitTrans[1].equals(GAME_RESPONSE) && splitTrans[3].equals(SCREEN_NAME)) {
 				// Pos 2 = Username
 				// Pos 3 = Content + hit/miss (h = hit; m = miss)
 				// Pos 4 = GAME_ID 
@@ -673,7 +805,6 @@ public class GUI extends JFrame implements ActionListener{
 	*/ 
 	public static void updateUserList(){
 		// clear the user list box 
-		//userList.setText(null);//this is a JTextARea
 		System.out.println("updating user list");
 		userList.setText(null);
 		// iterate through the list of connected user 
@@ -707,7 +838,7 @@ public class GUI extends JFrame implements ActionListener{
 		// Sends (1) GameMove indicator, indicating that the transmission is a game move 
 		// Sends (2) the buttons text [btnText] (identifying the location to be attacked)
 		// Sends (2) the SCREEN_NAME of the person attacking 
-		sendTransmission(GAME_MOVE, btnText, SCREEN_NAME); 
+		sendTransmission(ATTACK_INDICATOR,MY_IP+REGEX+OPPONENT_IP+REGEX+btnText, SCREEN_NAME); 
 		// NOTE: That location will be 1 greater than ArrayList location 
 	}
 		
@@ -816,25 +947,36 @@ public class GUI extends JFrame implements ActionListener{
 				
 				int s3Bow = -1; 
 				int s3Mid = -1; 
-				int s3Stern = -1; 
+				int s3Stern = -1;  
 				
 				try{
-					s1Bow = Integer.parseInt(ship1bow.getText());
-					s1Mid = Integer.parseInt(ship1mid.getText());
-					s1Stern = Integer.parseInt(ship1stern.getText());
+					s1Bow = Integer.parseInt(ship1bow.getText().trim());
+					//System.out.println("S1 BOW:" + s1Bow);
+					s1Mid = Integer.parseInt(ship1mid.getText().trim());
+					//System.out.println("S1 MID:" + s1Mid);
+					s1Stern = Integer.parseInt(ship1stern.getText().trim());
+					//System.out.println("S1 STERN:" + s1Stern);
 					
-					s2Bow = Integer.parseInt(ship2bow.getText());
-					s2Mid = Integer.parseInt(ship2mid.getText());
-					s2Stern = Integer.parseInt(ship2stern.getText());
+					s2Bow = Integer.parseInt(ship2bow.getText().trim());
+					//System.out.println("S2 BOW:" + s2Bow);
+					s2Mid = Integer.parseInt(ship2mid.getText().trim());
+					//System.out.println("S2 MID:" + s2Mid);
+					s2Stern = Integer.parseInt(ship2stern.getText().trim());
+					//System.out.println("S1 STERN:" + s2Stern);
 					
-					s3Bow = Integer.parseInt(ship3bow.getText());
-					s3Mid = Integer.parseInt(ship3mid.getText());
-					s3Stern = Integer.parseInt(ship3stern.getText());
+					s3Bow = Integer.parseInt(ship3bow.getText().trim());
+					//System.out.println("S3 BOW:" + s3Bow);
+					s3Mid = Integer.parseInt(ship3mid.getText().trim());
+					//System.out.println("S3 MID:" + s3Mid);
+					s3Stern = Integer.parseInt(ship3stern.getText().trim());
+					//System.out.println("S3 STERN:" + s3Bow);
 					
-					if(checkValidLocation(s1Bow, s1Mid, s1Stern)
-					&&checkValidLocation(s2Bow, s2Mid, s2Stern)
-					&&checkValidLocation(s3Bow, s3Mid, s3Stern)){
+					
+					if(validShips && checkValidLocation(s1Bow, s1Mid, s1Stern)
+					&& checkValidLocation(s2Bow, s2Mid, s2Stern)
+					&& checkValidLocation(s3Bow, s3Mid, s3Stern)){
 						addSimultaneousShip(s1Bow, s1Mid, s1Stern);
+						addSimultaneousShip(s2Bow, s2Mid, s2Stern);
 						addSimultaneousShip(s3Bow, s3Mid, s3Stern);
 					}
 					else {
