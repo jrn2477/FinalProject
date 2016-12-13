@@ -174,15 +174,17 @@ public class Server {
 		*/
 		public void setGameID(int gameNum, ThreadedServer player1, ThreadedServer player2){
 	
+			String p1Name = player1.screenName; 
 			String p1fullIP = player1.cs.getInetAddress().toString(); 
 			int p1index = p1fullIP.indexOf("/");
 			String p1trimedIP = p1fullIP.substring(p1index + 1);
 			
+			String p2Name = player2.screenName;
 			String p2fullIP = player2.cs.getInetAddress().toString(); 
 			int p2index = p2fullIP.indexOf("/");
 			String p2trimedIP = p2fullIP.substring(p2index + 1);
 			
-			sendTransmission(REGEX+GAME_PLACEMENT_INDICATOR+REGEX+p1trimedIP+REGEX+p2trimedIP+REGEX+gameNum);
+			sendTransmission(REGEX + GAME_PLACEMENT_INDICATOR + REGEX + p1Name + REGEX + p2Name + REGEX + gameNum);
 			//sendTransmission(REGEX+"M"+"Server"+"You were placed in game")
 			//sends a transmission to user indicating the game in which the have been placed
 			//client-side: see processTransmission().
